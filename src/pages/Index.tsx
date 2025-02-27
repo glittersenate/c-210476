@@ -60,15 +60,15 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 font-sans">
-      <header className="bg-white border-b border-gray-200">
+    <div className="min-h-screen bg-[#F1F0FB] text-gray-900 font-sans">
+      <header className="bg-white border-b border-gray-200 shadow-sm">
         <div className="container mx-auto py-6 px-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-gray-900 rounded-md flex items-center justify-center">
+              <div className="w-10 h-10 bg-[#9b87f5] rounded-md flex items-center justify-center">
                 <TrendingUp className="text-white w-6 h-6" />
               </div>
-              <h1 className="text-2xl font-semibold text-gray-900">Capacity Allocator</h1>
+              <h1 className="text-2xl font-semibold text-[#1A1F2C]">Capacity Allocator</h1>
             </div>
           </div>
         </div>
@@ -78,12 +78,12 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Sidebar / Configuration Panel */}
           <div className="lg:col-span-1">
-            <Card>
-              <CardHeader>
-                <CardTitle>Configuration</CardTitle>
+            <Card className="shadow-md border-[#E5DEFF]">
+              <CardHeader className="bg-gradient-to-r from-[#9b87f5]/10 to-transparent">
+                <CardTitle className="text-[#6E59A5]">Configuration</CardTitle>
                 <CardDescription>Adjust your dashboard settings</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 pt-6">
                 <div className="space-y-2">
                   <Label htmlFor="weeks">Number of Weeks: {weeks}</Label>
                   <Slider 
@@ -93,12 +93,13 @@ const Index = () => {
                     max={52} 
                     step={1} 
                     onValueChange={handleWeeksChange}
+                    className="[&>span]:bg-[#9b87f5]"
                   />
                 </div>
                 
                 <div className="space-y-2">
                   <Label>Start Date</Label>
-                  <div className="border rounded-md">
+                  <div className="border rounded-md border-[#E5DEFF]">
                     <Calendar
                       mode="single"
                       selected={startDate}
@@ -118,7 +119,7 @@ const Index = () => {
                       step="0.1" 
                       value={minFte}
                       onChange={(e) => setMinFte(parseFloat(e.target.value))}
-                      className="w-20"
+                      className="w-20 focus-visible:ring-[#9b87f5]"
                     />
                     <span>to</span>
                     <Input 
@@ -128,7 +129,7 @@ const Index = () => {
                       step="0.1" 
                       value={maxFte}
                       onChange={(e) => setMaxFte(parseFloat(e.target.value))}
-                      className="w-20"
+                      className="w-20 focus-visible:ring-[#9b87f5]"
                     />
                   </div>
                 </div>
@@ -141,13 +142,14 @@ const Index = () => {
                     placeholder="Search by name or project" 
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
+                    className="focus-visible:ring-[#9b87f5]"
                   />
                 </div>
               </CardContent>
               <CardFooter>
                 <Button 
                   variant="outline" 
-                  className="w-full"
+                  className="w-full border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/10"
                   onClick={() => {
                     setSearchText("");
                     setMinFte(0);
@@ -163,36 +165,36 @@ const Index = () => {
             
             {/* Metrics Display */}
             <div className="grid grid-cols-2 gap-4 mt-8">
-              <Card className="bg-white">
+              <Card className="bg-white shadow-md transition-all duration-300 hover:shadow-lg">
                 <CardContent className="pt-6">
                   <div className="flex flex-col items-center">
-                    <Users className="w-8 h-8 text-blue-500 mb-2" />
+                    <Users className="w-8 h-8 text-[#9b87f5] mb-2" />
                     <p className="text-sm text-gray-500">Team Members</p>
-                    <p className="text-2xl font-bold">{metrics.activeTeamMembers}</p>
+                    <p className="text-2xl font-bold text-[#1A1F2C]">{metrics.activeTeamMembers}</p>
                   </div>
                 </CardContent>
               </Card>
               
-              <Card className="bg-white">
+              <Card className="bg-white shadow-md transition-all duration-300 hover:shadow-lg">
                 <CardContent className="pt-6">
                   <div className="flex flex-col items-center">
-                    <Briefcase className="w-8 h-8 text-purple-500 mb-2" />
+                    <Briefcase className="w-8 h-8 text-[#7E69AB] mb-2" />
                     <p className="text-sm text-gray-500">Projects</p>
-                    <p className="text-2xl font-bold">{metrics.plannedProjects}</p>
+                    <p className="text-2xl font-bold text-[#1A1F2C]">{metrics.plannedProjects}</p>
                   </div>
                 </CardContent>
               </Card>
               
-              <Card className="bg-white col-span-2">
+              <Card className="bg-white shadow-md transition-all duration-300 hover:shadow-lg col-span-2">
                 <CardContent className="pt-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="flex flex-col items-center">
                       <p className="text-sm text-gray-500">Total FTE Days</p>
-                      <p className="text-2xl font-bold">{metrics.totalFteDays}</p>
+                      <p className="text-2xl font-bold text-[#1A1F2C]">{metrics.totalFteDays}</p>
                     </div>
                     <div className="flex flex-col items-center">
                       <p className="text-sm text-gray-500">Net Available</p>
-                      <p className="text-2xl font-bold">{metrics.netAvailableFteDays}</p>
+                      <p className="text-2xl font-bold text-[#6E59A5]">{metrics.netAvailableFteDays}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -202,17 +204,27 @@ const Index = () => {
           
           {/* Main Content */}
           <div className="lg:col-span-3">
-            <Tabs defaultValue="availability" onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2 mb-8">
-                <TabsTrigger value="availability">Current Availability</TabsTrigger>
-                <TabsTrigger value="planned">Planned Roles</TabsTrigger>
+            <Tabs defaultValue="availability" onValueChange={setActiveTab} className="space-y-8">
+              <TabsList className="grid w-full grid-cols-2 bg-[#E5DEFF]">
+                <TabsTrigger 
+                  value="availability" 
+                  className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white"
+                >
+                  Current Availability
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="planned"
+                  className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white"
+                >
+                  Planned Roles
+                </TabsTrigger>
               </TabsList>
               
               <TabsContent value="availability" className="space-y-8">
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between">
+                <Card className="shadow-md border-[#E5DEFF] overflow-hidden">
+                  <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-[#9b87f5]/10 to-transparent">
                     <div>
-                      <CardTitle>Total FTE Availability</CardTitle>
+                      <CardTitle className="text-[#6E59A5]">Total FTE Availability</CardTitle>
                       <CardDescription>
                         {format(startDate, 'MMM d, yyyy')} - {format(endDate, 'MMM d, yyyy')}
                       </CardDescription>
@@ -222,6 +234,7 @@ const Index = () => {
                       size="sm"
                       onClick={() => handleExportData('capacity')}
                       disabled={isLoading}
+                      className="border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/10"
                     >
                       <Download className="w-4 h-4 mr-2" />
                       Export
@@ -238,10 +251,10 @@ const Index = () => {
                   </CardContent>
                 </Card>
                 
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between">
+                <Card className="shadow-md border-[#E5DEFF] overflow-hidden">
+                  <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-[#9b87f5]/10 to-transparent">
                     <div>
-                      <CardTitle>Role-based FTE Availability</CardTitle>
+                      <CardTitle className="text-[#6E59A5]">Role-based FTE Availability</CardTitle>
                       <CardDescription>Breakdown by role</CardDescription>
                     </div>
                     <Button 
@@ -249,6 +262,7 @@ const Index = () => {
                       size="sm"
                       onClick={() => handleExportData('roles')}
                       disabled={isLoading}
+                      className="border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/10"
                     >
                       <Download className="w-4 h-4 mr-2" />
                       Export
@@ -265,10 +279,10 @@ const Index = () => {
                   </CardContent>
                 </Card>
                 
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between">
+                <Card className="shadow-md border-[#E5DEFF] overflow-hidden">
+                  <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-[#9b87f5]/10 to-transparent">
                     <div>
-                      <CardTitle>Filtered Availability Data</CardTitle>
+                      <CardTitle className="text-[#6E59A5]">Filtered Availability Data</CardTitle>
                       <CardDescription>
                         {searchText ? `Search: "${searchText}"` : 'All team members'}
                       </CardDescription>
@@ -278,6 +292,7 @@ const Index = () => {
                       size="sm"
                       onClick={() => handleExportData('availability')}
                       disabled={isLoading}
+                      className="border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/10"
                     >
                       <Download className="w-4 h-4 mr-2" />
                       Export Excel
@@ -296,9 +311,9 @@ const Index = () => {
               </TabsContent>
               
               <TabsContent value="planned" className="space-y-8">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Planned Roles</CardTitle>
+                <Card className="shadow-md border-[#E5DEFF] overflow-hidden">
+                  <CardHeader className="bg-gradient-to-r from-[#9b87f5]/10 to-transparent">
+                    <CardTitle className="text-[#6E59A5]">Planned Roles</CardTitle>
                     <CardDescription>Manage team allocation to projects</CardDescription>
                   </CardHeader>
                   <CardContent>

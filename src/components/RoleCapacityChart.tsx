@@ -9,13 +9,13 @@ interface RoleCapacityChartProps {
   weeks: number;
 }
 
-// Mock data for roles
+// Mock data for roles with Statworx colors
 const roles = [
-  { id: 1, name: "Frontend Developer", color: "#3498db" },
-  { id: 2, name: "Backend Developer", color: "#2ecc71" },
-  { id: 3, name: "Designer", color: "#9b59b6" },
-  { id: 4, name: "Product Manager", color: "#e74c3c" },
-  { id: 5, name: "QA Engineer", color: "#f39c12" }
+  { id: 1, name: "Frontend Developer", color: "#9b87f5" },
+  { id: 2, name: "Backend Developer", color: "#7E69AB" },
+  { id: 3, name: "Designer", color: "#6E59A5" },
+  { id: 4, name: "Product Manager", color: "#D6BCFA" },
+  { id: 5, name: "QA Engineer", color: "#1A1F2C" }
 ];
 
 // Mock data generator for role-based capacity
@@ -79,8 +79,8 @@ const RoleCapacityChart = ({ startDate, endDate, weeks }: RoleCapacityChartProps
             key={role.id}
             className={`px-3 py-1 text-xs rounded-full transition-colors ${
               activeRoles.includes(role.name)
-                ? 'bg-gray-800 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-[#9b87f5] text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-[#E5DEFF]'
             }`}
             onClick={() => toggleRole(role.name)}
           >

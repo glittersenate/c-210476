@@ -154,31 +154,31 @@ const AvailabilityTable = ({ startDate, endDate, searchText, minFte, maxFte }: A
   };
   
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md border border-[#E5DEFF] overflow-hidden">
       <Table>
-        <TableHeader>
+        <TableHeader className="bg-[#F1F0FB]">
           <TableRow>
             <TableHead className="w-[250px]">
-              <Button variant="ghost" onClick={() => handleSort('name')}>
+              <Button variant="ghost" onClick={() => handleSort('name')} className="hover:text-[#9b87f5]">
                 Name
                 <ArrowUpDown className="ml-2 h-4 w-4" />
               </Button>
             </TableHead>
             <TableHead>
-              <Button variant="ghost" onClick={() => handleSort('role')}>
+              <Button variant="ghost" onClick={() => handleSort('role')} className="hover:text-[#9b87f5]">
                 Role
                 <ArrowUpDown className="ml-2 h-4 w-4" />
               </Button>
             </TableHead>
             <TableHead>
-              <Button variant="ghost" onClick={() => handleSort('fte')}>
+              <Button variant="ghost" onClick={() => handleSort('fte')} className="hover:text-[#9b87f5]">
                 Total FTE
                 <ArrowUpDown className="ml-2 h-4 w-4" />
               </Button>
             </TableHead>
             <TableHead>Current Projects</TableHead>
             <TableHead>
-              <Button variant="ghost" onClick={() => handleSort('availableFte')}>
+              <Button variant="ghost" onClick={() => handleSort('availableFte')} className="hover:text-[#9b87f5]">
                 Available FTE
                 <ArrowUpDown className="ml-2 h-4 w-4" />
               </Button>
@@ -194,7 +194,7 @@ const AvailabilityTable = ({ startDate, endDate, searchText, minFte, maxFte }: A
             </TableRow>
           ) : (
             data.map((person) => (
-              <TableRow key={person.id}>
+              <TableRow key={person.id} className="hover:bg-[#F1F0FB]/50">
                 <TableCell className="font-medium">{person.name}</TableCell>
                 <TableCell>{person.role}</TableCell>
                 <TableCell>{person.fte.toFixed(1)}</TableCell>
@@ -204,9 +204,9 @@ const AvailabilityTable = ({ startDate, endDate, searchText, minFte, maxFte }: A
                       <span className="text-gray-500 text-sm">None</span>
                     ) : (
                       person.allocations.map((allocation: any, index: number) => (
-                        <Badge key={index} variant="outline" className="flex items-center gap-1">
+                        <Badge key={index} variant="outline" className="flex items-center gap-1 border-[#E5DEFF] bg-[#F1F0FB]/50">
                           <span>{allocation.projectName}</span>
-                          <span className="bg-gray-100 px-1 rounded text-xs">
+                          <span className="bg-[#E5DEFF] px-1 rounded text-xs text-[#6E59A5]">
                             {allocation.allocation.toFixed(1)}
                           </span>
                         </Badge>
@@ -217,7 +217,7 @@ const AvailabilityTable = ({ startDate, endDate, searchText, minFte, maxFte }: A
                 <TableCell>
                   <Badge 
                     variant={person.availableFte > 0.3 ? "default" : "destructive"}
-                    className="font-medium"
+                    className={`font-medium ${person.availableFte > 0.3 ? "bg-[#9b87f5]" : ""}`}
                   >
                     {person.availableFte.toFixed(1)}
                   </Badge>

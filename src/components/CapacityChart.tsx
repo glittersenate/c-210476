@@ -1,7 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { Card } from "@/components/ui/card";
-import { format, eachWeekOfInterval, addDays } from "date-fns";
+import { format, addDays } from "date-fns";
 import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 interface CapacityChartProps {
@@ -85,8 +84,8 @@ const CapacityChart = ({ startDate, endDate, weeks }: CapacityChartProps) => {
           type="monotone" 
           dataKey="totalCapacity" 
           stackId="1" 
-          stroke="#3498db" 
-          fill="#3498db"
+          stroke="#9b87f5" 
+          fill="#9b87f5"
           fillOpacity={0.3}
           name="Total Capacity"
         />
@@ -94,8 +93,8 @@ const CapacityChart = ({ startDate, endDate, weeks }: CapacityChartProps) => {
           type="monotone" 
           dataKey="plannedCapacity" 
           stackId="2" 
-          stroke="#e74c3c" 
-          fill="#e74c3c" 
+          stroke="#7E69AB" 
+          fill="#7E69AB" 
           fillOpacity={0.3}
           name="Planned Capacity"
         />
@@ -103,8 +102,8 @@ const CapacityChart = ({ startDate, endDate, weeks }: CapacityChartProps) => {
           type="monotone" 
           dataKey="netAvailable" 
           stackId="3" 
-          stroke="#2ecc71" 
-          fill="#2ecc71" 
+          stroke="#6E59A5" 
+          fill="#6E59A5" 
           fillOpacity={0.3}
           name="Net Available"
         />
