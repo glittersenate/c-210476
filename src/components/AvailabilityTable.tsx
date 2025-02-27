@@ -1,0 +1,234 @@
+
+import { useEffect, useState } from "react";
+import { format, addDays } from "date-fns";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { ChevronDown, ArrowUpDown } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+
+interface AvailabilityTableProps {
+  startDate: Date;
+  endDate: Date;
+  searchText: string;
+  minFte: number;
+  maxFte: number;
+}
+
+// Mock team members data
+const teamMembers = [
+  { id: 1, name: "Alex Johnson", role: "Frontend Developer", fte: 1.0 },
+  { id: 2, name: "Sam Williams", role: "Backend Developer", fte: 0.8 },
+  { id: 3, name: "Jordan Taylor", role: "Designer", fte: 0.6 },
+  { id: 4, name: "Casey Parker", role: "Product Manager", fte: 1.0 },
+  { id: 5, name: "Riley Morgan", role: "QA Engineer", fte: 0.7 },
+  { id: 6, name: "Jamie Roberts", role: "DevOps Engineer", fte: 0.9 },
+  { id: 7, name: "Quinn Adams", role: "Frontend Developer", fte: 1.0 },
+  { id: 8, name: "Avery Martinez", role: "Backend Developer", fte: 0.8 },
+  { id: 9, name: "Taylor Wilson", role: "Designer", fte: 0.5 },
+  { id: 10, name: "Morgan Smith", role: "Product Manager", fte: 0.6 },
+];
+
+// Mock projects data
+const projects = [
+  { id: 1, name: "Website Redesign", endDate: addDays(new Date(), 30) },
+  { id: 2, name: "Mobile App Development", endDate: addDays(new Date(), 60) },
+  { id: 3, name: "API Integration", endDate: addDays(new Date(), 45) },
+  { id: 4, name: "Infrastructure Upgrade", endDate: addDays(new Date(), 20) },
+];
+
+// Generate mock allocation data
+const generateAllocationData = () => {
+  const allocations = [];
+  
+  for (const member of teamMembers) {
+    const memberAllocations = [];
+    
+    // Randomly assign 0-2 projects to each team member
+    const numProjects = Math.floor(Math.random() * 3);
+    const assignedProjects = [];
+    
+    for (let i = 0; i < numProjects; i++) {
+      // Pick a random project
+      let projectIndex;
+      do {
+        projectIndex = Math.floor(Math.random() * projects.length);
+      } while (assignedProjects.includes(projectIndex));
+      
+      assignedProjects.push(projectIndex);
+      const project = projects[projectIndex];
+      
+      // Random allocation between 0.1 and 0.5 of their FTE
+      const allocation = Math.round((0.1 + Math.random() * 0.4) * 10) / 10;
+      
+      memberAllocations.push({
+        projectId: project.id,
+        projectName: project.name,
+        allocation,
+        endDate: project.endDate
+      });
+    }
+    
+    // Calculate available FTE
+    const totalAllocated = memberAllocations.reduce((sum, alloc) => sum + alloc.allocation, 0);
+    const availableFte = Math.round((member.fte - totalAllocated) * 10) / 10;
+    
+    allocations.push({
+      ...member,
+      allocations: memberAllocations,
+      availableFte
+    });
+  }
+  
+  return allocations;
+};
+
+const AvailabilityTable = ({ startDate, endDate, searchText, minFte, maxFte }: AvailabilityTableProps) => {
+  const [data, setData] = useState<any[]>([]);
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'ascending' | 'descending' } | null>(null);
+  
+  useEffect(() => {
+    // Generate mock allocation data
+    let allocations = generateAllocationData();
+    
+    // Apply filters
+    allocations = allocations.filter(item => {
+      // Filter by FTE range
+      if (item.availableFte < minFte || item.availableFte > maxFte) {
+        return false;
+      }
+      
+      // Filter by search text
+      if (searchText) {
+        const searchLower = searchText.toLowerCase();
+        const nameMatch = item.name.toLowerCase().includes(searchLower);
+        const roleMatch = item.role.toLowerCase().includes(searchLower);
+        const projectMatch = item.allocations.some((a: any) => 
+          a.projectName.toLowerCase().includes(searchLower)
+        );
+        
+        if (!nameMatch && !roleMatch && !projectMatch) {
+          return false;
+        }
+      }
+      
+      return true;
+    });
+    
+    // Apply sorting if configured
+    if (sortConfig) {
+      allocations.sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? -1 : 1;
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    
+    setData(allocations);
+  }, [startDate, endDate, searchText, minFte, maxFte, sortConfig]);
+  
+  const handleSort = (key: string) => {
+    let direction: 'ascending' | 'descending' = 'ascending';
+    
+    if (sortConfig && sortConfig.key === key) {
+      direction = sortConfig.direction === 'ascending' ? 'descending' : 'ascending';
+    }
+    
+    setSortConfig({ key, direction });
+  };
+  
+  return (
+    <div className="rounded-md border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[250px]">
+              <Button variant="ghost" onClick={() => handleSort('name')}>
+                Name
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+              </Button>
+            </TableHead>
+            <TableHead>
+              <Button variant="ghost" onClick={() => handleSort('role')}>
+                Role
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+              </Button>
+            </TableHead>
+            <TableHead>
+              <Button variant="ghost" onClick={() => handleSort('fte')}>
+                Total FTE
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+              </Button>
+            </TableHead>
+            <TableHead>Current Projects</TableHead>
+            <TableHead>
+              <Button variant="ghost" onClick={() => handleSort('availableFte')}>
+                Available FTE
+                <ArrowUpDown className="ml-2 h-4 w-4" />
+              </Button>
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={5} className="h-24 text-center">
+                No results found.
+              </TableCell>
+            </TableRow>
+          ) : (
+            data.map((person) => (
+              <TableRow key={person.id}>
+                <TableCell className="font-medium">{person.name}</TableCell>
+                <TableCell>{person.role}</TableCell>
+                <TableCell>{person.fte.toFixed(1)}</TableCell>
+                <TableCell>
+                  <div className="flex flex-wrap gap-1">
+                    {person.allocations.length === 0 ? (
+                      <span className="text-gray-500 text-sm">None</span>
+                    ) : (
+                      person.allocations.map((allocation: any, index: number) => (
+                        <Badge key={index} variant="outline" className="flex items-center gap-1">
+                          <span>{allocation.projectName}</span>
+                          <span className="bg-gray-100 px-1 rounded text-xs">
+                            {allocation.allocation.toFixed(1)}
+                          </span>
+                        </Badge>
+                      ))
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Badge 
+                    variant={person.availableFte > 0.3 ? "default" : "destructive"}
+                    className="font-medium"
+                  >
+                    {person.availableFte.toFixed(1)}
+                  </Badge>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  );
+};
+
+export default AvailabilityTable;
