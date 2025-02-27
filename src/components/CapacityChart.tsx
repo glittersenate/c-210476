@@ -54,38 +54,42 @@ const CapacityChart = ({ startDate, endDate, weeks }: CapacityChartProps) => {
         data={data}
         margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
       >
-        <CartesianGrid strokeDasharray="3 3" stroke="#f5f5f5" />
+        <CartesianGrid strokeDasharray="3 3" stroke="#222222" />
         <XAxis 
           dataKey="name" 
-          tick={{ fontSize: 12 }}
+          tick={{ fontSize: 12, fill: "#FAFDFF" }}
           tickLine={false}
+          stroke="#333333"
         />
         <YAxis 
           tickLine={false}
-          tick={{ fontSize: 12 }}
-          label={{ value: 'FTE', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fontSize: 12 } }}
+          tick={{ fontSize: 12, fill: "#FAFDFF" }}
+          stroke="#333333"
+          label={{ value: 'FTE', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fontSize: 12, fill: "#FAFDFF" } }}
         />
         <Tooltip 
           contentStyle={{ 
-            backgroundColor: 'white', 
+            backgroundColor: '#121212', 
             borderRadius: '8px',
-            border: '1px solid #e2e8f0',
-            boxShadow: '0 2px 6px rgba(0, 0, 0, 0.05)',
-            fontSize: '12px'
+            border: '1px solid #333333',
+            boxShadow: '0 2px 6px rgba(0, 0, 0, 0.5)',
+            fontSize: '12px',
+            color: '#FAFDFF'
           }}
           formatter={(value: number) => [value.toFixed(1), '']}
+          labelStyle={{ color: "#FAFDFF" }}
         />
         <Legend 
           verticalAlign="top" 
           height={36}
-          wrapperStyle={{ fontSize: '12px' }}
+          wrapperStyle={{ fontSize: '12px', color: "#FAFDFF" }}
         />
         <Area 
           type="monotone" 
           dataKey="totalCapacity" 
           stackId="1" 
-          stroke="#9b87f5" 
-          fill="#9b87f5"
+          stroke="#0000FF" 
+          fill="#0000FF"
           fillOpacity={0.3}
           name="Total Capacity"
         />
@@ -93,8 +97,8 @@ const CapacityChart = ({ startDate, endDate, weeks }: CapacityChartProps) => {
           type="monotone" 
           dataKey="plannedCapacity" 
           stackId="2" 
-          stroke="#7E69AB" 
-          fill="#7E69AB" 
+          stroke="#6682FF" 
+          fill="#6682FF" 
           fillOpacity={0.3}
           name="Planned Capacity"
         />
@@ -102,8 +106,8 @@ const CapacityChart = ({ startDate, endDate, weeks }: CapacityChartProps) => {
           type="monotone" 
           dataKey="netAvailable" 
           stackId="3" 
-          stroke="#6E59A5" 
-          fill="#6E59A5" 
+          stroke="#3D5BFF" 
+          fill="#3D5BFF" 
           fillOpacity={0.3}
           name="Net Available"
         />

@@ -154,31 +154,31 @@ const AvailabilityTable = ({ startDate, endDate, searchText, minFte, maxFte }: A
   };
   
   return (
-    <div className="rounded-md border border-[#E5DEFF] overflow-hidden">
+    <div className="rounded-md border border-[#333333] overflow-hidden">
       <Table>
-        <TableHeader className="bg-[#F1F0FB]">
-          <TableRow>
-            <TableHead className="w-[250px]">
-              <Button variant="ghost" onClick={() => handleSort('name')} className="hover:text-[#9b87f5]">
+        <TableHeader className="bg-[#1A1A1A]">
+          <TableRow className="border-b border-[#333333]">
+            <TableHead className="w-[250px] text-[#FAFDFF]">
+              <Button variant="ghost" onClick={() => handleSort('name')} className="hover:text-[#0000FF] text-[#FAFDFF]">
                 Name
                 <ArrowUpDown className="ml-2 h-4 w-4" />
               </Button>
             </TableHead>
-            <TableHead>
-              <Button variant="ghost" onClick={() => handleSort('role')} className="hover:text-[#9b87f5]">
+            <TableHead className="text-[#FAFDFF]">
+              <Button variant="ghost" onClick={() => handleSort('role')} className="hover:text-[#0000FF] text-[#FAFDFF]">
                 Role
                 <ArrowUpDown className="ml-2 h-4 w-4" />
               </Button>
             </TableHead>
-            <TableHead>
-              <Button variant="ghost" onClick={() => handleSort('fte')} className="hover:text-[#9b87f5]">
+            <TableHead className="text-[#FAFDFF]">
+              <Button variant="ghost" onClick={() => handleSort('fte')} className="hover:text-[#0000FF] text-[#FAFDFF]">
                 Total FTE
                 <ArrowUpDown className="ml-2 h-4 w-4" />
               </Button>
             </TableHead>
-            <TableHead>Current Projects</TableHead>
-            <TableHead>
-              <Button variant="ghost" onClick={() => handleSort('availableFte')} className="hover:text-[#9b87f5]">
+            <TableHead className="text-[#FAFDFF]">Current Projects</TableHead>
+            <TableHead className="text-[#FAFDFF]">
+              <Button variant="ghost" onClick={() => handleSort('availableFte')} className="hover:text-[#0000FF] text-[#FAFDFF]">
                 Available FTE
                 <ArrowUpDown className="ml-2 h-4 w-4" />
               </Button>
@@ -188,25 +188,25 @@ const AvailabilityTable = ({ startDate, endDate, searchText, minFte, maxFte }: A
         <TableBody>
           {data.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={5} className="h-24 text-center">
+              <TableCell colSpan={5} className="h-24 text-center text-[#FAFDFF]">
                 No results found.
               </TableCell>
             </TableRow>
           ) : (
             data.map((person) => (
-              <TableRow key={person.id} className="hover:bg-[#F1F0FB]/50">
-                <TableCell className="font-medium">{person.name}</TableCell>
-                <TableCell>{person.role}</TableCell>
-                <TableCell>{person.fte.toFixed(1)}</TableCell>
+              <TableRow key={person.id} className="hover:bg-[#1A1A1A] border-b border-[#333333]">
+                <TableCell className="font-medium text-[#FAFDFF]">{person.name}</TableCell>
+                <TableCell className="text-[#FAFDFF]">{person.role}</TableCell>
+                <TableCell className="text-[#FAFDFF]">{person.fte.toFixed(1)}</TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
                     {person.allocations.length === 0 ? (
                       <span className="text-gray-500 text-sm">None</span>
                     ) : (
                       person.allocations.map((allocation: any, index: number) => (
-                        <Badge key={index} variant="outline" className="flex items-center gap-1 border-[#E5DEFF] bg-[#F1F0FB]/50">
+                        <Badge key={index} variant="outline" className="flex items-center gap-1 border-[#333333] bg-[#121212] text-[#FAFDFF]">
                           <span>{allocation.projectName}</span>
-                          <span className="bg-[#E5DEFF] px-1 rounded text-xs text-[#6E59A5]">
+                          <span className="bg-[#222222] px-1 rounded text-xs text-[#FAFDFF]">
                             {allocation.allocation.toFixed(1)}
                           </span>
                         </Badge>
@@ -217,7 +217,7 @@ const AvailabilityTable = ({ startDate, endDate, searchText, minFte, maxFte }: A
                 <TableCell>
                   <Badge 
                     variant={person.availableFte > 0.3 ? "default" : "destructive"}
-                    className={`font-medium ${person.availableFte > 0.3 ? "bg-[#9b87f5]" : ""}`}
+                    className={`font-medium ${person.availableFte > 0.3 ? "bg-[#0000FF]" : ""}`}
                   >
                     {person.availableFte.toFixed(1)}
                   </Badge>

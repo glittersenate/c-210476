@@ -60,15 +60,15 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F1F0FB] text-gray-900 font-sans">
-      <header className="bg-white border-b border-gray-200 shadow-sm">
+    <div className="min-h-screen dark bg-[#050203] text-[#FAFDFF]">
+      <header className="bg-[#121212] border-b border-gray-800 shadow-lg">
         <div className="container mx-auto py-6 px-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-[#9b87f5] rounded-md flex items-center justify-center">
-                <TrendingUp className="text-white w-6 h-6" />
+              <div className="w-10 h-10 bg-[#0000FF] rounded-md flex items-center justify-center">
+                <TrendingUp className="text-[#FAFDFF] w-6 h-6" />
               </div>
-              <h1 className="text-2xl font-semibold text-[#1A1F2C]">Capacity Allocator</h1>
+              <h1 className="text-2xl font-semibold text-[#FAFDFF]">Capacity Allocator</h1>
             </div>
           </div>
         </div>
@@ -78,14 +78,14 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Sidebar / Configuration Panel */}
           <div className="lg:col-span-1">
-            <Card className="shadow-md border-[#E5DEFF]">
-              <CardHeader className="bg-gradient-to-r from-[#9b87f5]/10 to-transparent">
-                <CardTitle className="text-[#6E59A5]">Configuration</CardTitle>
-                <CardDescription>Adjust your dashboard settings</CardDescription>
+            <Card className="shadow-md border-[#222222] bg-[#121212]">
+              <CardHeader className="bg-gradient-to-r from-[#0000FF]/10 to-transparent">
+                <CardTitle className="text-[#FAFDFF]">Configuration</CardTitle>
+                <CardDescription className="text-gray-400">Adjust your dashboard settings</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4 pt-6">
                 <div className="space-y-2">
-                  <Label htmlFor="weeks">Number of Weeks: {weeks}</Label>
+                  <Label htmlFor="weeks" className="text-[#FAFDFF]">Number of Weeks: {weeks}</Label>
                   <Slider 
                     id="weeks"
                     defaultValue={[weeks]} 
@@ -93,24 +93,24 @@ const Index = () => {
                     max={52} 
                     step={1} 
                     onValueChange={handleWeeksChange}
-                    className="[&>span]:bg-[#9b87f5]"
+                    className="[&>span]:bg-[#0000FF]"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label>Start Date</Label>
-                  <div className="border rounded-md border-[#E5DEFF]">
+                  <Label className="text-[#FAFDFF]">Start Date</Label>
+                  <div className="border rounded-md border-gray-700">
                     <Calendar
                       mode="single"
                       selected={startDate}
                       onSelect={(date) => date && setStartDate(date)}
-                      className="rounded-md border"
+                      className="rounded-md border-gray-700 bg-[#121212] text-[#FAFDFF]"
                     />
                   </div>
                 </div>
                 
                 <div className="space-y-2">
-                  <Label>FTE Range</Label>
+                  <Label className="text-[#FAFDFF]">FTE Range</Label>
                   <div className="flex items-center gap-2">
                     <Input 
                       type="number" 
@@ -119,9 +119,9 @@ const Index = () => {
                       step="0.1" 
                       value={minFte}
                       onChange={(e) => setMinFte(parseFloat(e.target.value))}
-                      className="w-20 focus-visible:ring-[#9b87f5]"
+                      className="w-20 focus-visible:ring-[#0000FF] bg-[#121212] border-gray-700 text-[#FAFDFF]"
                     />
-                    <span>to</span>
+                    <span className="text-[#FAFDFF]">to</span>
                     <Input 
                       type="number" 
                       min="0" 
@@ -129,27 +129,27 @@ const Index = () => {
                       step="0.1" 
                       value={maxFte}
                       onChange={(e) => setMaxFte(parseFloat(e.target.value))}
-                      className="w-20 focus-visible:ring-[#9b87f5]"
+                      className="w-20 focus-visible:ring-[#0000FF] bg-[#121212] border-gray-700 text-[#FAFDFF]"
                     />
                   </div>
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="search">Search</Label>
+                  <Label htmlFor="search" className="text-[#FAFDFF]">Search</Label>
                   <Input 
                     id="search"
                     type="text" 
                     placeholder="Search by name or project" 
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
-                    className="focus-visible:ring-[#9b87f5]"
+                    className="focus-visible:ring-[#0000FF] bg-[#121212] border-gray-700 text-[#FAFDFF]"
                   />
                 </div>
               </CardContent>
               <CardFooter>
                 <Button 
                   variant="outline" 
-                  className="w-full border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/10"
+                  className="w-full border-[#0000FF] text-[#0000FF] hover:bg-[#0000FF]/10"
                   onClick={() => {
                     setSearchText("");
                     setMinFte(0);
@@ -165,36 +165,36 @@ const Index = () => {
             
             {/* Metrics Display */}
             <div className="grid grid-cols-2 gap-4 mt-8">
-              <Card className="bg-white shadow-md transition-all duration-300 hover:shadow-lg">
+              <Card className="bg-[#121212] border-[#222222] shadow-md transition-all duration-300 hover:shadow-lg">
                 <CardContent className="pt-6">
                   <div className="flex flex-col items-center">
-                    <Users className="w-8 h-8 text-[#9b87f5] mb-2" />
-                    <p className="text-sm text-gray-500">Team Members</p>
-                    <p className="text-2xl font-bold text-[#1A1F2C]">{metrics.activeTeamMembers}</p>
+                    <Users className="w-8 h-8 text-[#0000FF] mb-2" />
+                    <p className="text-sm text-gray-400">Team Members</p>
+                    <p className="text-2xl font-bold text-[#FAFDFF]">{metrics.activeTeamMembers}</p>
                   </div>
                 </CardContent>
               </Card>
               
-              <Card className="bg-white shadow-md transition-all duration-300 hover:shadow-lg">
+              <Card className="bg-[#121212] border-[#222222] shadow-md transition-all duration-300 hover:shadow-lg">
                 <CardContent className="pt-6">
                   <div className="flex flex-col items-center">
-                    <Briefcase className="w-8 h-8 text-[#7E69AB] mb-2" />
-                    <p className="text-sm text-gray-500">Projects</p>
-                    <p className="text-2xl font-bold text-[#1A1F2C]">{metrics.plannedProjects}</p>
+                    <Briefcase className="w-8 h-8 text-[#0000FF] mb-2" />
+                    <p className="text-sm text-gray-400">Projects</p>
+                    <p className="text-2xl font-bold text-[#FAFDFF]">{metrics.plannedProjects}</p>
                   </div>
                 </CardContent>
               </Card>
               
-              <Card className="bg-white shadow-md transition-all duration-300 hover:shadow-lg col-span-2">
+              <Card className="bg-[#121212] border-[#222222] shadow-md transition-all duration-300 hover:shadow-lg col-span-2">
                 <CardContent className="pt-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="flex flex-col items-center">
-                      <p className="text-sm text-gray-500">Total FTE Days</p>
-                      <p className="text-2xl font-bold text-[#1A1F2C]">{metrics.totalFteDays}</p>
+                      <p className="text-sm text-gray-400">Total FTE Days</p>
+                      <p className="text-2xl font-bold text-[#FAFDFF]">{metrics.totalFteDays}</p>
                     </div>
                     <div className="flex flex-col items-center">
-                      <p className="text-sm text-gray-500">Net Available</p>
-                      <p className="text-2xl font-bold text-[#6E59A5]">{metrics.netAvailableFteDays}</p>
+                      <p className="text-sm text-gray-400">Net Available</p>
+                      <p className="text-2xl font-bold text-[#0000FF]">{metrics.netAvailableFteDays}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -205,27 +205,27 @@ const Index = () => {
           {/* Main Content */}
           <div className="lg:col-span-3">
             <Tabs defaultValue="availability" onValueChange={setActiveTab} className="space-y-8">
-              <TabsList className="grid w-full grid-cols-2 bg-[#E5DEFF]">
+              <TabsList className="grid w-full grid-cols-2 bg-[#121212] border border-gray-800">
                 <TabsTrigger 
                   value="availability" 
-                  className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white"
+                  className="data-[state=active]:bg-[#0000FF] data-[state=active]:text-[#FAFDFF] text-gray-400"
                 >
                   Current Availability
                 </TabsTrigger>
                 <TabsTrigger 
                   value="planned"
-                  className="data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white"
+                  className="data-[state=active]:bg-[#0000FF] data-[state=active]:text-[#FAFDFF] text-gray-400"
                 >
                   Planned Roles
                 </TabsTrigger>
               </TabsList>
               
               <TabsContent value="availability" className="space-y-8">
-                <Card className="shadow-md border-[#E5DEFF] overflow-hidden">
-                  <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-[#9b87f5]/10 to-transparent">
+                <Card className="shadow-md border-[#222222] bg-[#121212] overflow-hidden">
+                  <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-[#0000FF]/10 to-transparent">
                     <div>
-                      <CardTitle className="text-[#6E59A5]">Total FTE Availability</CardTitle>
-                      <CardDescription>
+                      <CardTitle className="text-[#FAFDFF]">Total FTE Availability</CardTitle>
+                      <CardDescription className="text-gray-400">
                         {format(startDate, 'MMM d, yyyy')} - {format(endDate, 'MMM d, yyyy')}
                       </CardDescription>
                     </div>
@@ -234,7 +234,7 @@ const Index = () => {
                       size="sm"
                       onClick={() => handleExportData('capacity')}
                       disabled={isLoading}
-                      className="border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/10"
+                      className="border-[#0000FF] text-[#0000FF] hover:bg-[#0000FF]/10"
                     >
                       <Download className="w-4 h-4 mr-2" />
                       Export
@@ -251,18 +251,18 @@ const Index = () => {
                   </CardContent>
                 </Card>
                 
-                <Card className="shadow-md border-[#E5DEFF] overflow-hidden">
-                  <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-[#9b87f5]/10 to-transparent">
+                <Card className="shadow-md border-[#222222] bg-[#121212] overflow-hidden">
+                  <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-[#0000FF]/10 to-transparent">
                     <div>
-                      <CardTitle className="text-[#6E59A5]">Role-based FTE Availability</CardTitle>
-                      <CardDescription>Breakdown by role</CardDescription>
+                      <CardTitle className="text-[#FAFDFF]">Role-based FTE Availability</CardTitle>
+                      <CardDescription className="text-gray-400">Breakdown by role</CardDescription>
                     </div>
                     <Button 
                       variant="outline" 
                       size="sm"
                       onClick={() => handleExportData('roles')}
                       disabled={isLoading}
-                      className="border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/10"
+                      className="border-[#0000FF] text-[#0000FF] hover:bg-[#0000FF]/10"
                     >
                       <Download className="w-4 h-4 mr-2" />
                       Export
@@ -279,11 +279,11 @@ const Index = () => {
                   </CardContent>
                 </Card>
                 
-                <Card className="shadow-md border-[#E5DEFF] overflow-hidden">
-                  <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-[#9b87f5]/10 to-transparent">
+                <Card className="shadow-md border-[#222222] bg-[#121212] overflow-hidden">
+                  <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-[#0000FF]/10 to-transparent">
                     <div>
-                      <CardTitle className="text-[#6E59A5]">Filtered Availability Data</CardTitle>
-                      <CardDescription>
+                      <CardTitle className="text-[#FAFDFF]">Filtered Availability Data</CardTitle>
+                      <CardDescription className="text-gray-400">
                         {searchText ? `Search: "${searchText}"` : 'All team members'}
                       </CardDescription>
                     </div>
@@ -292,7 +292,7 @@ const Index = () => {
                       size="sm"
                       onClick={() => handleExportData('availability')}
                       disabled={isLoading}
-                      className="border-[#9b87f5] text-[#9b87f5] hover:bg-[#9b87f5]/10"
+                      className="border-[#0000FF] text-[#0000FF] hover:bg-[#0000FF]/10"
                     >
                       <Download className="w-4 h-4 mr-2" />
                       Export Excel
@@ -311,10 +311,10 @@ const Index = () => {
               </TabsContent>
               
               <TabsContent value="planned" className="space-y-8">
-                <Card className="shadow-md border-[#E5DEFF] overflow-hidden">
-                  <CardHeader className="bg-gradient-to-r from-[#9b87f5]/10 to-transparent">
-                    <CardTitle className="text-[#6E59A5]">Planned Roles</CardTitle>
-                    <CardDescription>Manage team allocation to projects</CardDescription>
+                <Card className="shadow-md border-[#222222] bg-[#121212] overflow-hidden">
+                  <CardHeader className="bg-gradient-to-r from-[#0000FF]/10 to-transparent">
+                    <CardTitle className="text-[#FAFDFF]">Planned Roles</CardTitle>
+                    <CardDescription className="text-gray-400">Manage team allocation to projects</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <PlannedRolesTable 

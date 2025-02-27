@@ -164,19 +164,19 @@ const PlannedRolesTable = ({ startDate, endDate }: PlannedRolesTableProps) => {
   return (
     <div className="space-y-6">
       {/* Add/Edit Role Form */}
-      <div className="grid grid-cols-6 gap-4 p-4 border rounded-lg bg-gray-50">
+      <div className="grid grid-cols-6 gap-4 p-4 border rounded-lg bg-[#0A0A0A] border-[#333333]">
         <div className="col-span-6 sm:col-span-2">
-          <label className="text-sm font-medium text-gray-700">Role</label>
+          <label className="text-sm font-medium text-[#FAFDFF]">Role</label>
           <Select
             value={newRole.role}
             onValueChange={(value) => setNewRole({...newRole, role: value})}
           >
-            <SelectTrigger className="w-full mt-1">
+            <SelectTrigger className="w-full mt-1 bg-[#121212] border-[#333333] text-[#FAFDFF]">
               <SelectValue placeholder="Select role" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-[#121212] border-[#333333] text-[#FAFDFF]">
               {initialRoles.map(role => (
-                <SelectItem key={role.id} value={role.name}>
+                <SelectItem key={role.id} value={role.name} className="focus:bg-[#0000FF] focus:text-[#FAFDFF]">
                   {role.name}
                 </SelectItem>
               ))}
@@ -185,7 +185,7 @@ const PlannedRolesTable = ({ startDate, endDate }: PlannedRolesTableProps) => {
         </div>
         
         <div className="col-span-6 sm:col-span-1">
-          <label className="text-sm font-medium text-gray-700">FTE Required</label>
+          <label className="text-sm font-medium text-[#FAFDFF]">FTE Required</label>
           <Input
             type="number"
             min="0.1"
@@ -193,79 +193,81 @@ const PlannedRolesTable = ({ startDate, endDate }: PlannedRolesTableProps) => {
             step="0.1"
             value={newRole.fte}
             onChange={(e) => setNewRole({...newRole, fte: parseFloat(e.target.value)})}
-            className="mt-1"
+            className="mt-1 bg-[#121212] border-[#333333] text-[#FAFDFF]"
           />
         </div>
         
         <div className="col-span-6 sm:col-span-1">
-          <label className="text-sm font-medium text-gray-700">Start Date</label>
+          <label className="text-sm font-medium text-[#FAFDFF]">Start Date</label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full justify-start text-left font-normal mt-1",
-                  !newRole.startDate && "text-muted-foreground"
+                  "w-full justify-start text-left font-normal mt-1 bg-[#121212] border-[#333333] text-[#FAFDFF]",
+                  !newRole.startDate && "text-gray-500"
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {newRole.startDate ? format(newRole.startDate, "PPP") : "Pick a date"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
+            <PopoverContent className="w-auto p-0 bg-[#121212] border-[#333333]">
               <Calendar
                 mode="single"
                 selected={newRole.startDate}
                 onSelect={(date) => date && setNewRole({...newRole, startDate: date})}
+                className="bg-[#121212] text-[#FAFDFF]"
               />
             </PopoverContent>
           </Popover>
         </div>
         
         <div className="col-span-6 sm:col-span-1">
-          <label className="text-sm font-medium text-gray-700">End Date</label>
+          <label className="text-sm font-medium text-[#FAFDFF]">End Date</label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full justify-start text-left font-normal mt-1",
-                  !newRole.endDate && "text-muted-foreground"
+                  "w-full justify-start text-left font-normal mt-1 bg-[#121212] border-[#333333] text-[#FAFDFF]",
+                  !newRole.endDate && "text-gray-500"
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {newRole.endDate ? format(newRole.endDate, "PPP") : "Pick a date"}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
+            <PopoverContent className="w-auto p-0 bg-[#121212] border-[#333333]">
               <Calendar
                 mode="single"
                 selected={newRole.endDate}
                 onSelect={(date) => date && setNewRole({...newRole, endDate: date})}
+                className="bg-[#121212] text-[#FAFDFF]"
               />
             </PopoverContent>
           </Popover>
         </div>
         
         <div className="col-span-6 sm:col-span-1">
-          <label className="text-sm font-medium text-gray-700">Project</label>
+          <label className="text-sm font-medium text-[#FAFDFF]">Project</label>
           <Input
             type="text"
             placeholder="Project name"
             value={newRole.project}
             onChange={(e) => setNewRole({...newRole, project: e.target.value})}
-            className="mt-1"
+            className="mt-1 bg-[#121212] border-[#333333] text-[#FAFDFF]"
           />
         </div>
         
         <div className="col-span-6 sm:col-span-6 sm:col-start-6 sm:justify-self-end self-end">
           {editingId ? (
-            <Button onClick={handleUpdateRole}>
+            <Button onClick={handleUpdateRole} className="bg-[#0000FF] hover:bg-[#0000FF]/80 text-[#FAFDFF]">
               <Save className="mr-2 h-4 w-4" />
               Update
             </Button>
           ) : (
-            <Button onClick={handleAddRole}>
+            <Button onClick={handleAddRole} className="bg-[#0000FF] hover:bg-[#0000FF]/80 text-[#FAFDFF]">
               <Plus className="mr-2 h-4 w-4" />
               Add Role
             </Button>
@@ -274,39 +276,40 @@ const PlannedRolesTable = ({ startDate, endDate }: PlannedRolesTableProps) => {
       </div>
       
       {/* Planned Roles Table */}
-      <div className="rounded-md border">
+      <div className="rounded-md border border-[#333333]">
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Role</TableHead>
-              <TableHead>FTE Required</TableHead>
-              <TableHead>Start Date</TableHead>
-              <TableHead>End Date</TableHead>
-              <TableHead>Project</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+          <TableHeader className="bg-[#1A1A1A]">
+            <TableRow className="border-b border-[#333333]">
+              <TableHead className="text-[#FAFDFF]">Role</TableHead>
+              <TableHead className="text-[#FAFDFF]">FTE Required</TableHead>
+              <TableHead className="text-[#FAFDFF]">Start Date</TableHead>
+              <TableHead className="text-[#FAFDFF]">End Date</TableHead>
+              <TableHead className="text-[#FAFDFF]">Project</TableHead>
+              <TableHead className="text-right text-[#FAFDFF]">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {plannedRoles.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center">
+                <TableCell colSpan={6} className="h-24 text-center text-[#FAFDFF]">
                   No planned roles yet. Add one above.
                 </TableCell>
               </TableRow>
             ) : (
               plannedRoles.map((role) => (
-                <TableRow key={role.id}>
-                  <TableCell className="font-medium">{role.role}</TableCell>
-                  <TableCell>{role.fte.toFixed(1)}</TableCell>
-                  <TableCell>{format(role.startDate, "MMM d, yyyy")}</TableCell>
-                  <TableCell>{format(role.endDate, "MMM d, yyyy")}</TableCell>
-                  <TableCell>{role.project}</TableCell>
+                <TableRow key={role.id} className="hover:bg-[#1A1A1A] border-b border-[#333333]">
+                  <TableCell className="font-medium text-[#FAFDFF]">{role.role}</TableCell>
+                  <TableCell className="text-[#FAFDFF]">{role.fte.toFixed(1)}</TableCell>
+                  <TableCell className="text-[#FAFDFF]">{format(role.startDate, "MMM d, yyyy")}</TableCell>
+                  <TableCell className="text-[#FAFDFF]">{format(role.endDate, "MMM d, yyyy")}</TableCell>
+                  <TableCell className="text-[#FAFDFF]">{role.project}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <Button 
                         variant="ghost" 
                         size="sm"
                         onClick={() => handleEditRole(role.id)}
+                        className="text-[#FAFDFF] hover:text-[#0000FF]"
                       >
                         Edit
                       </Button>

@@ -11,11 +11,11 @@ interface RoleCapacityChartProps {
 
 // Mock data for roles with Statworx colors
 const roles = [
-  { id: 1, name: "Frontend Developer", color: "#9b87f5" },
-  { id: 2, name: "Backend Developer", color: "#7E69AB" },
-  { id: 3, name: "Designer", color: "#6E59A5" },
-  { id: 4, name: "Product Manager", color: "#D6BCFA" },
-  { id: 5, name: "QA Engineer", color: "#1A1F2C" }
+  { id: 1, name: "Frontend Developer", color: "#0000FF" },
+  { id: 2, name: "Backend Developer", color: "#4D4DFF" },
+  { id: 3, name: "Designer", color: "#8080FF" },
+  { id: 4, name: "Product Manager", color: "#B3B3FF" },
+  { id: 5, name: "QA Engineer", color: "#FAFDFF" }
 ];
 
 // Mock data generator for role-based capacity
@@ -79,8 +79,8 @@ const RoleCapacityChart = ({ startDate, endDate, weeks }: RoleCapacityChartProps
             key={role.id}
             className={`px-3 py-1 text-xs rounded-full transition-colors ${
               activeRoles.includes(role.name)
-                ? 'bg-[#9b87f5] text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-[#E5DEFF]'
+                ? 'bg-[#0000FF] text-[#FAFDFF]'
+                : 'bg-[#222222] text-gray-400 hover:bg-[#333333]'
             }`}
             onClick={() => toggleRole(role.name)}
           >
@@ -95,31 +95,35 @@ const RoleCapacityChart = ({ startDate, endDate, weeks }: RoleCapacityChartProps
             data={data}
             margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="#f5f5f5" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#222222" />
             <XAxis 
               dataKey="name" 
-              tick={{ fontSize: 12 }}
+              tick={{ fontSize: 12, fill: "#FAFDFF" }}
               tickLine={false}
+              stroke="#333333"
             />
             <YAxis 
               tickLine={false}
-              tick={{ fontSize: 12 }}
-              label={{ value: 'FTE', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fontSize: 12 } }}
+              tick={{ fontSize: 12, fill: "#FAFDFF" }}
+              stroke="#333333"
+              label={{ value: 'FTE', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fontSize: 12, fill: "#FAFDFF" } }}
             />
             <Tooltip 
               contentStyle={{ 
-                backgroundColor: 'white', 
+                backgroundColor: '#121212', 
                 borderRadius: '8px',
-                border: '1px solid #e2e8f0',
-                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.05)',
-                fontSize: '12px'
+                border: '1px solid #333333',
+                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.5)',
+                fontSize: '12px',
+                color: '#FAFDFF'
               }}
               formatter={(value: number) => [value.toFixed(1), '']}
+              labelStyle={{ color: "#FAFDFF" }}
             />
             <Legend 
               verticalAlign="top" 
               height={36}
-              wrapperStyle={{ fontSize: '12px' }}
+              wrapperStyle={{ fontSize: '12px', color: "#FAFDFF" }}
             />
             
             {roles.filter(role => activeRoles.includes(role.name)).map((role) => (
