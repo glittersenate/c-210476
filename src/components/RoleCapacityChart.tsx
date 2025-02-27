@@ -54,6 +54,56 @@ const generateRoleCapacityData = (start: Date, numWeeks: number) => {
   return data;
 };
 
+// Custom tooltip component that shows legend colors with values
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    // Group by role name to show capacity and planned together
+    const roleGroups: Record<string, any[]> = {};
+    
+    payload.forEach((entry: any) => {
+      const dataKey = entry.dataKey;
+      const roleName = dataKey.split('_')[0];
+      
+      if (!roleGroups[roleName]) {
+        roleGroups[roleName] = [];
+      }
+      
+      roleGroups[roleName].push(entry);
+    });
+    
+    return (
+      <div className="bg-[#121212] rounded-md border border-[#333333] p-3 shadow-lg">
+        <p className="text-[#FAFDFF] font-medium mb-2">{`Week: ${label}`}</p>
+        
+        {Object.entries(roleGroups).map(([roleName, entries], roleIndex) => (
+          <div key={`role-${roleIndex}`} className="mb-2">
+            <p className="text-[#FAFDFF] font-medium">{roleName}</p>
+            
+            {entries.map((entry, entryIndex) => {
+              const metricName = entry.dataKey.split('_')[1];
+              return (
+                <div key={`metric-${entryIndex}`} className="flex items-center gap-2 ml-2">
+                  <div 
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: entry.color }}
+                  />
+                  <p className="text-[#FAFDFF] text-sm">
+                    <span>{metricName === 'capacity' ? 'Capacity' : 
+                           metricName === 'planned' ? 'Planned' : 
+                           'Available'}:</span> {entry.value.toFixed(1)}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return null;
+};
+
 const RoleCapacityChart = ({ startDate, endDate, weeks }: RoleCapacityChartProps) => {
   const [data, setData] = useState<any[]>([]);
   const [activeRoles, setActiveRoles] = useState<string[]>([roles[0].name, roles[1].name]);
@@ -108,18 +158,7 @@ const RoleCapacityChart = ({ startDate, endDate, weeks }: RoleCapacityChartProps
               stroke="#333333"
               label={{ value: 'FTE', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fontSize: 12, fill: "#FAFDFF" } }}
             />
-            <Tooltip 
-              contentStyle={{ 
-                backgroundColor: '#121212', 
-                borderRadius: '8px',
-                border: '1px solid #333333',
-                boxShadow: '0 2px 6px rgba(0, 0, 0, 0.5)',
-                fontSize: '12px',
-                color: '#FAFDFF'
-              }}
-              formatter={(value: number) => [value.toFixed(1), '']}
-              labelStyle={{ color: "#FAFDFF" }}
-            />
+            <Tooltip content={<CustomTooltip />} />
             <Legend 
               verticalAlign="top" 
               height={36}

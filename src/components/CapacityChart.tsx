@@ -40,6 +40,30 @@ const generateCapacityData = (start: Date, numWeeks: number) => {
   return data;
 };
 
+// Custom tooltip component that shows legend colors with values
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-[#121212] rounded-md border border-[#333333] p-3 shadow-lg">
+        <p className="text-[#FAFDFF] font-medium mb-2">{`Week: ${label}`}</p>
+        {payload.map((entry: any, index: number) => (
+          <div key={`item-${index}`} className="flex items-center gap-2 mb-1">
+            <div 
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: entry.color }}
+            />
+            <p className="text-[#FAFDFF]">
+              <span className="font-medium">{entry.name}:</span> {entry.value.toFixed(1)}
+            </p>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return null;
+};
+
 const CapacityChart = ({ startDate, endDate, weeks }: CapacityChartProps) => {
   const [data, setData] = useState<any[]>([]);
   
@@ -67,18 +91,7 @@ const CapacityChart = ({ startDate, endDate, weeks }: CapacityChartProps) => {
           stroke="#333333"
           label={{ value: 'FTE', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fontSize: 12, fill: "#FAFDFF" } }}
         />
-        <Tooltip 
-          contentStyle={{ 
-            backgroundColor: '#121212', 
-            borderRadius: '8px',
-            border: '1px solid #333333',
-            boxShadow: '0 2px 6px rgba(0, 0, 0, 0.5)',
-            fontSize: '12px',
-            color: '#FAFDFF'
-          }}
-          formatter={(value: number) => [value.toFixed(1), '']}
-          labelStyle={{ color: "#FAFDFF" }}
-        />
+        <Tooltip content={<CustomTooltip />} />
         <Legend 
           verticalAlign="top" 
           height={36}

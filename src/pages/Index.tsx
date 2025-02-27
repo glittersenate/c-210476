@@ -68,7 +68,7 @@ const Index = () => {
               <div className="w-10 h-10 bg-[#0000FF] rounded-md flex items-center justify-center">
                 <TrendingUp className="text-[#FAFDFF] w-6 h-6" />
               </div>
-              <h1 className="text-2xl font-semibold text-[#FAFDFF]">Capacity Allocator</h1>
+              <h1 className="text-2xl font-semibold text-[#FAFDFF]">St<span className="text-[#0000FF]">{AI}</span>ffing</h1>
             </div>
           </div>
         </div>
@@ -93,7 +93,7 @@ const Index = () => {
                     max={52} 
                     step={1} 
                     onValueChange={handleWeeksChange}
-                    className="[&>span]:bg-[#0000FF]"
+                    className="[&>.bg-primary]:bg-[#0000FF] [&>span]:opacity-100 [&>span]:bg-[#0000FF]"
                   />
                 </div>
                 
