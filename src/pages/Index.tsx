@@ -68,7 +68,7 @@ const Index = () => {
               <div className="w-10 h-10 bg-[#0000FF] rounded-md flex items-center justify-center">
                 <TrendingUp className="text-[#FAFDFF] w-6 h-6" />
               </div>
-              <h1 className="text-2xl font-semibold text-[#FAFDFF]">St<span className="text-[#0000FF]">{AI}</span>ffing</h1>
+              <h1 className="text-2xl font-semibold text-[#FAFDFF]">St<span className="text-[#0000FF]">AI</span>ffing</h1>
             </div>
           </div>
         </div>
