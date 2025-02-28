@@ -63,19 +63,13 @@ const generateCapacityData = (start: Date, numWeeks: number, plannedRolesData?: 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-gradient-to-br from-[#111133]/95 to-[#0A0A20]/95 backdrop-blur-md rounded-lg border border-[#222244] p-4 shadow-lg">
-        <p className="text-[#FAFDFF] font-medium mb-3">{`Week: ${label}`}</p>
+      <div className="bg-[#121212] rounded-md border border-[#333333] p-3 shadow-lg">
+        <p className="text-[#FAFDFF] font-medium mb-2">{`Week: ${label}`}</p>
         {payload.map((entry: any, index: number) => (
-          <div key={`item-${index}`} className="flex items-center gap-3 mb-2">
+          <div key={`item-${index}`} className="flex items-center gap-2 mb-1">
             <div 
               className="w-3 h-3 rounded-full"
-              style={{ 
-                background: entry.dataKey === "totalCapacity" 
-                  ? "linear-gradient(to right, #4243B5, #0000FF)" 
-                  : entry.dataKey === "plannedCapacity" 
-                  ? "linear-gradient(to right, #6682FF, #667BFF)" 
-                  : "linear-gradient(to right, #3D5BFF, #3D68FF)" 
-              }}
+              style={{ backgroundColor: entry.color }}
             />
             <p className="text-[#FAFDFF]">
               <span className="font-medium">{entry.name}:</span> {entry.value.toFixed(1)}
@@ -103,48 +97,33 @@ const CapacityChart = ({ startDate, endDate, weeks, showSeries = ["totalCapacity
         data={data}
         margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
       >
-        <defs>
-          <linearGradient id="totalCapacityGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#4243B5" stopOpacity={0.6}/>
-            <stop offset="95%" stopColor="#0000FF" stopOpacity={0.1}/>
-          </linearGradient>
-          <linearGradient id="plannedCapacityGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#6682FF" stopOpacity={0.6}/>
-            <stop offset="95%" stopColor="#667BFF" stopOpacity={0.1}/>
-          </linearGradient>
-          <linearGradient id="netAvailableGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#3D5BFF" stopOpacity={0.6}/>
-            <stop offset="95%" stopColor="#3D68FF" stopOpacity={0.1}/>
-          </linearGradient>
-        </defs>
-        <CartesianGrid strokeDasharray="3 3" stroke="#222244" />
+        <CartesianGrid strokeDasharray="3 3" stroke="#222222" />
         <XAxis 
           dataKey="name" 
-          tick={{ fontSize: 12, fill: "#C8C8F0" }}
+          tick={{ fontSize: 12, fill: "#FAFDFF" }}
           tickLine={false}
-          stroke="#222244"
+          stroke="#333333"
         />
         <YAxis 
           tickLine={false}
-          tick={{ fontSize: 12, fill: "#C8C8F0" }}
-          stroke="#222244"
-          label={{ value: 'FTE', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fontSize: 12, fill: "#C8C8F0" } }}
+          tick={{ fontSize: 12, fill: "#FAFDFF" }}
+          stroke="#333333"
+          label={{ value: 'FTE', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fontSize: 12, fill: "#FAFDFF" } }}
         />
         <Tooltip content={<CustomTooltip />} />
         <Legend 
           verticalAlign="top" 
           height={36}
-          wrapperStyle={{ fontSize: '12px', color: "#C8C8F0" }}
-          iconType="circle"
+          wrapperStyle={{ fontSize: '12px', color: "#FAFDFF" }}
         />
         {showSeries.includes("totalCapacity") && (
           <Area 
             type="monotone" 
             dataKey="totalCapacity" 
             stackId="1" 
-            stroke="url(#totalCapacityGradient)" 
-            fill="url(#totalCapacityGradient)"
-            strokeWidth={2}
+            stroke="#0000FF" 
+            fill="#0000FF"
+            fillOpacity={0.3}
             name="Total Capacity"
           />
         )}
@@ -153,9 +132,9 @@ const CapacityChart = ({ startDate, endDate, weeks, showSeries = ["totalCapacity
             type="monotone" 
             dataKey="plannedCapacity" 
             stackId="2" 
-            stroke="url(#plannedCapacityGradient)" 
-            fill="url(#plannedCapacityGradient)" 
-            strokeWidth={2}
+            stroke="#6682FF" 
+            fill="#6682FF" 
+            fillOpacity={0.3}
             name="Planned Capacity"
           />
         )}
@@ -164,9 +143,9 @@ const CapacityChart = ({ startDate, endDate, weeks, showSeries = ["totalCapacity
             type="monotone" 
             dataKey="netAvailable" 
             stackId="3" 
-            stroke="url(#netAvailableGradient)" 
-            fill="url(#netAvailableGradient)" 
-            strokeWidth={2}
+            stroke="#3D5BFF" 
+            fill="#3D5BFF" 
+            fillOpacity={0.3}
             name="Net Available"
           />
         )}
