@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { format, addDays } from "date-fns";
+import { format, addDays, addWeeks, differenceInWeeks, startOfWeek } from "date-fns";
 import {
   Table,
   TableBody,
@@ -49,9 +49,10 @@ const projects = [
   { id: 4, name: "Infrastructure Upgrade", endDate: addDays(new Date(), 20) },
 ];
 
-// Generate mock allocation data
-const generateAllocationData = () => {
+// Generate mock allocation data with weekly availability
+const generateAllocationData = (startDate: Date, endDate: Date) => {
   const allocations = [];
+  const numWeeks = Math.max(1, differenceInWeeks(endDate, startDate));
   
   for (const member of teamMembers) {
     const memberAllocations = [];
@@ -73,22 +74,57 @@ const generateAllocationData = () => {
       // Random allocation between 0.1 and 0.5 of their FTE
       const allocation = Math.round((0.1 + Math.random() * 0.4) * 10) / 10;
       
+      // Random start week
+      const randomStartWeek = Math.floor(Math.random() * (numWeeks / 2));
+      // Random duration (1-4 weeks)
+      const duration = 1 + Math.floor(Math.random() * 4);
+      
       memberAllocations.push({
         projectId: project.id,
         projectName: project.name,
         allocation,
+        startWeek: randomStartWeek,
+        duration: Math.min(duration, numWeeks - randomStartWeek),
         endDate: project.endDate
       });
     }
     
-    // Calculate available FTE
+    // Generate weekly availability data
+    const weeklyAvailability = [];
+    for (let week = 0; week < numWeeks; week++) {
+      // Start with full FTE
+      let weekAllocation = 0;
+      
+      // Subtract allocations for this week
+      memberAllocations.forEach(alloc => {
+        if (week >= alloc.startWeek && week < (alloc.startWeek + alloc.duration)) {
+          weekAllocation += alloc.allocation;
+        }
+      });
+      
+      // Calculate available FTE for this week
+      const availableFte = Math.round((member.fte - weekAllocation) * 10) / 10;
+      
+      // Add some randomness to availability
+      const randomFactor = 0.9 + Math.random() * 0.2; // 90-110%
+      const adjustedAvailableFte = Math.min(member.fte, Math.max(0, Math.round(availableFte * randomFactor * 10) / 10));
+      
+      weeklyAvailability.push({
+        week,
+        date: addWeeks(startDate, week),
+        availableFte: adjustedAvailableFte
+      });
+    }
+    
+    // Calculate total available FTE
     const totalAllocated = memberAllocations.reduce((sum, alloc) => sum + alloc.allocation, 0);
     const availableFte = Math.round((member.fte - totalAllocated) * 10) / 10;
     
     allocations.push({
       ...member,
       allocations: memberAllocations,
-      availableFte
+      availableFte,
+      weeklyAvailability
     });
   }
   
@@ -98,10 +134,26 @@ const generateAllocationData = () => {
 const AvailabilityTable = ({ startDate, endDate, searchText, minFte, maxFte }: AvailabilityTableProps) => {
   const [data, setData] = useState<any[]>([]);
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'ascending' | 'descending' } | null>(null);
+  const [weekHeaders, setWeekHeaders] = useState<any[]>([]);
   
   useEffect(() => {
+    // Generate week headers
+    const numWeeks = Math.max(1, differenceInWeeks(endDate, startDate));
+    const headers = [];
+    
+    for (let i = 0; i < numWeeks; i++) {
+      const weekStart = addWeeks(startOfWeek(startDate, { weekStartsOn: 1 }), i);
+      headers.push({
+        week: i,
+        date: weekStart,
+        label: format(weekStart, 'MMM d')
+      });
+    }
+    
+    setWeekHeaders(headers);
+    
     // Generate mock allocation data
-    let allocations = generateAllocationData();
+    let allocations = generateAllocationData(startDate, endDate);
     
     // Apply filters
     allocations = allocations.filter(item => {
@@ -152,50 +204,69 @@ const AvailabilityTable = ({ startDate, endDate, searchText, minFte, maxFte }: A
     
     setSortConfig({ key, direction });
   };
+
+  // Function to render the badge for a specific FTE value
+  const renderFteBadge = (fte: number) => {
+    return (
+      <Badge 
+        variant={fte > 0.3 ? "default" : "destructive"}
+        className={`font-medium ${fte > 0.3 ? "bg-[#0000FF]" : ""}`}
+      >
+        {fte.toFixed(1)}
+      </Badge>
+    );
+  };
   
   return (
-    <div className="rounded-md border border-[#333333] overflow-hidden">
+    <div className="rounded-md border border-[#333333] overflow-x-auto">
       <Table>
         <TableHeader className="bg-[#1A1A1A]">
           <TableRow className="border-b border-[#333333]">
-            <TableHead className="w-[250px] text-[#FAFDFF]">
+            <TableHead className="w-[200px] text-[#FAFDFF] sticky left-0 bg-[#1A1A1A] z-10">
               <Button variant="ghost" onClick={() => handleSort('name')} className="hover:text-[#0000FF] text-[#FAFDFF]">
                 Name
                 <ArrowUpDown className="ml-2 h-4 w-4" />
               </Button>
             </TableHead>
-            <TableHead className="text-[#FAFDFF]">
+            <TableHead className="w-[150px] text-[#FAFDFF]">
               <Button variant="ghost" onClick={() => handleSort('role')} className="hover:text-[#0000FF] text-[#FAFDFF]">
                 Role
                 <ArrowUpDown className="ml-2 h-4 w-4" />
               </Button>
             </TableHead>
-            <TableHead className="text-[#FAFDFF]">
+            <TableHead className="w-[100px] text-[#FAFDFF]">
               <Button variant="ghost" onClick={() => handleSort('fte')} className="hover:text-[#0000FF] text-[#FAFDFF]">
                 Total FTE
                 <ArrowUpDown className="ml-2 h-4 w-4" />
               </Button>
             </TableHead>
-            <TableHead className="text-[#FAFDFF]">Current Projects</TableHead>
-            <TableHead className="text-[#FAFDFF]">
+            <TableHead className="w-[200px] text-[#FAFDFF]">Current Projects</TableHead>
+            <TableHead className="w-[120px] text-[#FAFDFF]">
               <Button variant="ghost" onClick={() => handleSort('availableFte')} className="hover:text-[#0000FF] text-[#FAFDFF]">
-                Available FTE
+                Avg. Available
                 <ArrowUpDown className="ml-2 h-4 w-4" />
               </Button>
             </TableHead>
+            {weekHeaders.map((header) => (
+              <TableHead key={header.week} className="text-[#FAFDFF] text-center whitespace-nowrap w-[90px]">
+                {header.label}
+              </TableHead>
+            ))}
           </TableRow>
         </TableHeader>
         <TableBody>
           {data.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={5} className="h-24 text-center text-[#FAFDFF]">
+              <TableCell colSpan={5 + weekHeaders.length} className="h-24 text-center text-[#FAFDFF]">
                 No results found.
               </TableCell>
             </TableRow>
           ) : (
             data.map((person) => (
               <TableRow key={person.id} className="hover:bg-[#1A1A1A] border-b border-[#333333]">
-                <TableCell className="font-medium text-[#FAFDFF]">{person.name}</TableCell>
+                <TableCell className="font-medium text-[#FAFDFF] sticky left-0 bg-[#050203] hover:bg-[#1A1A1A] z-10">
+                  {person.name}
+                </TableCell>
                 <TableCell className="text-[#FAFDFF]">{person.role}</TableCell>
                 <TableCell className="text-[#FAFDFF]">{person.fte.toFixed(1)}</TableCell>
                 <TableCell>
@@ -215,13 +286,16 @@ const AvailabilityTable = ({ startDate, endDate, searchText, minFte, maxFte }: A
                   </div>
                 </TableCell>
                 <TableCell>
-                  <Badge 
-                    variant={person.availableFte > 0.3 ? "default" : "destructive"}
-                    className={`font-medium ${person.availableFte > 0.3 ? "bg-[#0000FF]" : ""}`}
-                  >
-                    {person.availableFte.toFixed(1)}
-                  </Badge>
+                  {renderFteBadge(person.availableFte)}
                 </TableCell>
+                {weekHeaders.map((header) => {
+                  const weekData = person.weeklyAvailability.find((w: any) => w.week === header.week);
+                  return (
+                    <TableCell key={`${person.id}-${header.week}`} className="text-center px-2">
+                      {weekData ? renderFteBadge(weekData.availableFte) : '—'}
+                    </TableCell>
+                  );
+                })}
               </TableRow>
             ))
           )}
