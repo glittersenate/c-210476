@@ -9,13 +9,13 @@ interface RoleCapacityChartProps {
   weeks: number;
 }
 
-// Mock data for roles with Statworx colors
+// Mock data for roles with modern colors
 const roles = [
-  { id: 1, name: "Frontend Developer", color: "#0000FF" },
-  { id: 2, name: "Backend Developer", color: "#4D4DFF" },
-  { id: 3, name: "Designer", color: "#8080FF" },
-  { id: 4, name: "Product Manager", color: "#B3B3FF" },
-  { id: 5, name: "QA Engineer", color: "#FAFDFF" }
+  { id: 1, name: "Frontend Developer", color: "#4243B5" },
+  { id: 2, name: "Backend Developer", color: "#6356E5" },
+  { id: 3, name: "Designer", color: "#7E69FF" },
+  { id: 4, name: "Product Manager", color: "#9977FF" },
+  { id: 5, name: "QA Engineer", color: "#B391FF" }
 ];
 
 // Mock data generator for role-based capacity
@@ -72,22 +72,29 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     });
     
     return (
-      <div className="bg-[#121212] rounded-md border border-[#333333] p-3 shadow-lg">
-        <p className="text-[#FAFDFF] font-medium mb-2">{`Week: ${label}`}</p>
+      <div className="bg-gradient-to-br from-[#111133]/95 to-[#0A0A20]/95 backdrop-blur-md rounded-lg border border-[#222244] p-4 shadow-lg">
+        <p className="text-[#FAFDFF] font-medium mb-3">{`Week: ${label}`}</p>
         
         {Object.entries(roleGroups).map(([roleName, entries], roleIndex) => (
-          <div key={`role-${roleIndex}`} className="mb-2">
-            <p className="text-[#FAFDFF] font-medium">{roleName}</p>
+          <div key={`role-${roleIndex}`} className="mb-3">
+            <p className="text-[#FAFDFF] font-medium border-b border-[#222244] pb-1 mb-2">{roleName}</p>
             
             {entries.map((entry, entryIndex) => {
               const metricName = entry.dataKey.split('_')[1];
+              const baseColor = roles.find(r => r.name === roleName)?.color || '#4243B5';
+              
+              // Derive different shades based on the metric
+              const color = metricName === 'capacity' ? baseColor :
+                          metricName === 'planned' ? `${baseColor}90` : 
+                          `${baseColor}60`;
+              
               return (
-                <div key={`metric-${entryIndex}`} className="flex items-center gap-2 ml-2">
+                <div key={`metric-${entryIndex}`} className="flex items-center gap-3 ml-2 mb-1">
                   <div 
-                    className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: entry.color }}
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: color }}
                   />
-                  <p className="text-[#FAFDFF] text-sm">
+                  <p className="text-[#C8C8F0] text-sm">
                     <span>{metricName === 'capacity' ? 'Capacity' : 
                            metricName === 'planned' ? 'Planned' : 
                            'Available'}:</span> {entry.value.toFixed(1)}
@@ -127,11 +134,16 @@ const RoleCapacityChart = ({ startDate, endDate, weeks }: RoleCapacityChartProps
         {roles.map(role => (
           <button
             key={role.id}
-            className={`px-3 py-1 text-xs rounded-full transition-colors ${
+            className={`px-4 py-1.5 text-xs rounded-full transition-all duration-300 shadow-sm ${
               activeRoles.includes(role.name)
-                ? 'bg-[#0000FF] text-[#FAFDFF]'
-                : 'bg-[#222222] text-gray-400 hover:bg-[#333333]'
+                ? `bg-gradient-to-r from-[${role.color}] to-[${role.color}CC] text-white shadow-[${role.color}]/20 shadow-md`
+                : 'bg-[#111133]/50 text-[#A0A0C2] hover:bg-[#222244] hover:text-[#FAFDFF]'
             }`}
+            style={{
+              background: activeRoles.includes(role.name) 
+                ? `linear-gradient(to right, ${role.color}, ${role.color}CC)` 
+                : ''
+            }}
             onClick={() => toggleRole(role.name)}
           >
             {role.name}
@@ -145,51 +157,66 @@ const RoleCapacityChart = ({ startDate, endDate, weeks }: RoleCapacityChartProps
             data={data}
             margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="#222222" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#222244" />
             <XAxis 
               dataKey="name" 
-              tick={{ fontSize: 12, fill: "#FAFDFF" }}
+              tick={{ fontSize: 12, fill: "#C8C8F0" }}
               tickLine={false}
-              stroke="#333333"
+              stroke="#222244"
             />
             <YAxis 
               tickLine={false}
-              tick={{ fontSize: 12, fill: "#FAFDFF" }}
-              stroke="#333333"
-              label={{ value: 'FTE', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fontSize: 12, fill: "#FAFDFF" } }}
+              tick={{ fontSize: 12, fill: "#C8C8F0" }}
+              stroke="#222244"
+              label={{ value: 'FTE', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fontSize: 12, fill: "#C8C8F0" } }}
             />
             <Tooltip content={<CustomTooltip />} />
             <Legend 
               verticalAlign="top" 
               height={36}
-              wrapperStyle={{ fontSize: '12px', color: "#FAFDFF" }}
+              wrapperStyle={{ fontSize: '12px', color: "#C8C8F0" }}
+              iconType="circle"
             />
             
-            {roles.filter(role => activeRoles.includes(role.name)).map((role) => (
-              <Line
-                key={`${role.name}_capacity`}
-                type="monotone"
-                dataKey={`${role.name}_capacity`}
-                name={`${role.name} Capacity`}
-                stroke={role.color}
-                strokeWidth={2}
-                dot={{ r: 3 }}
-                activeDot={{ r: 5 }}
-              />
-            ))}
-            
-            {roles.filter(role => activeRoles.includes(role.name)).map((role) => (
-              <Line
-                key={`${role.name}_planned`}
-                type="monotone"
-                dataKey={`${role.name}_planned`}
-                name={`${role.name} Planned`}
-                stroke={role.color}
-                strokeDasharray="5 5"
-                strokeWidth={2}
-                dot={{ r: 3 }}
-              />
-            ))}
+            {roles.filter(role => activeRoles.includes(role.name)).map((role) => {
+              // Generate gradient IDs for each role
+              const capacityGradientId = `${role.name.replace(/\s+/g, '')}_capacityGradient`;
+              const plannedGradientId = `${role.name.replace(/\s+/g, '')}_plannedGradient`;
+              
+              return (
+                <React.Fragment key={role.id}>
+                  <defs>
+                    <linearGradient id={capacityGradientId} x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor={role.color} stopOpacity={1} />
+                      <stop offset="100%" stopColor={`${role.color}CC`} stopOpacity={1} />
+                    </linearGradient>
+                    <linearGradient id={plannedGradientId} x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor={role.color} stopOpacity={0.6} />
+                      <stop offset="100%" stopColor={`${role.color}90`} stopOpacity={0.6} />
+                    </linearGradient>
+                  </defs>
+                  
+                  <Line
+                    type="monotone"
+                    dataKey={`${role.name}_capacity`}
+                    name={`${role.name} Capacity`}
+                    stroke={`url(#${capacityGradientId})`}
+                    strokeWidth={3}
+                    dot={{ r: 4, fill: role.color, strokeWidth: 1, stroke: "#111133" }}
+                    activeDot={{ r: 6, fill: role.color, strokeWidth: 1, stroke: "#FFFFFF" }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey={`${role.name}_planned`}
+                    name={`${role.name} Planned`}
+                    stroke={`url(#${plannedGradientId})`}
+                    strokeDasharray="5 5"
+                    strokeWidth={2}
+                    dot={{ r: 3, fill: `${role.color}90`, strokeWidth: 1, stroke: "#111133" }}
+                  />
+                </React.Fragment>
+              );
+            })}
           </LineChart>
         </ResponsiveContainer>
       </div>
