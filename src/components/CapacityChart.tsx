@@ -7,10 +7,12 @@ interface CapacityChartProps {
   startDate: Date;
   endDate: Date;
   weeks: number;
+  showSeries?: string[]; // Control which data series to show: "totalCapacity", "plannedCapacity", "netAvailable"
+  plannedRolesData?: any[]; // Optional data from planned roles table
 }
 
 // Mock data generator
-const generateCapacityData = (start: Date, numWeeks: number) => {
+const generateCapacityData = (start: Date, numWeeks: number, plannedRolesData?: any[]) => {
   const data = [];
   
   // Base values
@@ -26,7 +28,24 @@ const generateCapacityData = (start: Date, numWeeks: number) => {
     const randomFactor = 0.8 + Math.random() * 0.4; // Between 0.8 and 1.2
     const totalCapacity = baseCapacity * randomFactor;
     
-    const plannedCapacity = basePlanned * (0.9 + Math.random() * 0.3);
+    // If we have planned roles data, use it to calculate planned capacity for this week
+    let plannedCapacity = basePlanned * (0.9 + Math.random() * 0.3);
+    
+    if (plannedRolesData && plannedRolesData.length > 0) {
+      // Calculate planned capacity based on roles that are active during this week
+      plannedCapacity = plannedRolesData.reduce((total, role) => {
+        const roleStartDate = new Date(role.startDate);
+        const roleEndDate = new Date(role.endDate);
+        const currentWeekDate = weekStart;
+        
+        // Check if the role is active during this week
+        if (currentWeekDate >= roleStartDate && currentWeekDate <= roleEndDate) {
+          return total + role.fte;
+        }
+        return total;
+      }, 0);
+    }
+    
     const netAvailable = totalCapacity - plannedCapacity;
     
     data.push({
@@ -64,13 +83,13 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-const CapacityChart = ({ startDate, endDate, weeks }: CapacityChartProps) => {
+const CapacityChart = ({ startDate, endDate, weeks, showSeries = ["totalCapacity", "plannedCapacity", "netAvailable"], plannedRolesData }: CapacityChartProps) => {
   const [data, setData] = useState<any[]>([]);
   
   useEffect(() => {
     // Generate mock data based on start date and number of weeks
-    setData(generateCapacityData(startDate, weeks));
-  }, [startDate, endDate, weeks]);
+    setData(generateCapacityData(startDate, weeks, plannedRolesData));
+  }, [startDate, endDate, weeks, plannedRolesData]);
   
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -97,33 +116,39 @@ const CapacityChart = ({ startDate, endDate, weeks }: CapacityChartProps) => {
           height={36}
           wrapperStyle={{ fontSize: '12px', color: "#FAFDFF" }}
         />
-        <Area 
-          type="monotone" 
-          dataKey="totalCapacity" 
-          stackId="1" 
-          stroke="#0000FF" 
-          fill="#0000FF"
-          fillOpacity={0.3}
-          name="Total Capacity"
-        />
-        <Area 
-          type="monotone" 
-          dataKey="plannedCapacity" 
-          stackId="2" 
-          stroke="#6682FF" 
-          fill="#6682FF" 
-          fillOpacity={0.3}
-          name="Planned Capacity"
-        />
-        <Area 
-          type="monotone" 
-          dataKey="netAvailable" 
-          stackId="3" 
-          stroke="#3D5BFF" 
-          fill="#3D5BFF" 
-          fillOpacity={0.3}
-          name="Net Available"
-        />
+        {showSeries.includes("totalCapacity") && (
+          <Area 
+            type="monotone" 
+            dataKey="totalCapacity" 
+            stackId="1" 
+            stroke="#0000FF" 
+            fill="#0000FF"
+            fillOpacity={0.3}
+            name="Total Capacity"
+          />
+        )}
+        {showSeries.includes("plannedCapacity") && (
+          <Area 
+            type="monotone" 
+            dataKey="plannedCapacity" 
+            stackId="2" 
+            stroke="#6682FF" 
+            fill="#6682FF" 
+            fillOpacity={0.3}
+            name="Planned Capacity"
+          />
+        )}
+        {showSeries.includes("netAvailable") && (
+          <Area 
+            type="monotone" 
+            dataKey="netAvailable" 
+            stackId="3" 
+            stroke="#3D5BFF" 
+            fill="#3D5BFF" 
+            fillOpacity={0.3}
+            name="Net Available"
+          />
+        )}
       </AreaChart>
     </ResponsiveContainer>
   );

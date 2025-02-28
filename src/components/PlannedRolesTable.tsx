@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 interface PlannedRolesTableProps {
   startDate: Date;
   endDate: Date;
+  onRolesChange?: (roles: any[]) => void; // Callback to notify parent of roles data change
 }
 
 const initialRoles = [
@@ -60,7 +61,7 @@ const initialPlannedRoles = [
   }
 ];
 
-const PlannedRolesTable = ({ startDate, endDate }: PlannedRolesTableProps) => {
+const PlannedRolesTable = ({ startDate, endDate, onRolesChange }: PlannedRolesTableProps) => {
   const { toast } = useToast();
   const [plannedRoles, setPlannedRoles] = useState<any[]>([]);
   const [newRole, setNewRole] = useState({
@@ -76,6 +77,13 @@ const PlannedRolesTable = ({ startDate, endDate }: PlannedRolesTableProps) => {
     // Load initial data
     setPlannedRoles(initialPlannedRoles);
   }, []);
+  
+  useEffect(() => {
+    // Notify parent component of roles data change
+    if (onRolesChange) {
+      onRolesChange(plannedRoles);
+    }
+  }, [plannedRoles, onRolesChange]);
   
   const handleAddRole = () => {
     if (!newRole.role || !newRole.project || newRole.fte <= 0) {

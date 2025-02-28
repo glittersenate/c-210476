@@ -27,6 +27,7 @@ const Index = () => {
   const [searchText, setSearchText] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true); // Simulating authentication
+  const [plannedRolesData, setPlannedRolesData] = useState<any[]>([]);
   
   // Simulated metrics data
   const metrics = {
@@ -57,6 +58,10 @@ const Index = () => {
         duration: 3000,
       });
     }, 1000);
+  };
+
+  const handlePlannedRolesChange = (roles: any[]) => {
+    setPlannedRolesData(roles);
   };
 
   return (
@@ -246,6 +251,7 @@ const Index = () => {
                         startDate={startDate} 
                         endDate={endDate} 
                         weeks={weeks}
+                        showSeries={["totalCapacity"]}
                       />
                     </div>
                   </CardContent>
@@ -312,6 +318,38 @@ const Index = () => {
               
               <TabsContent value="planned" className="space-y-8">
                 <Card className="shadow-md border-[#222222] bg-[#121212] overflow-hidden">
+                  <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-[#0000FF]/10 to-transparent">
+                    <div>
+                      <CardTitle className="text-[#FAFDFF]">Total FTE Capacity & Planned Usage</CardTitle>
+                      <CardDescription className="text-gray-400">
+                        {format(startDate, 'MMM d, yyyy')} - {format(endDate, 'MMM d, yyyy')}
+                      </CardDescription>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleExportData('planned-capacity')}
+                      disabled={isLoading}
+                      className="border-[#0000FF] text-[#0000FF] hover:bg-[#0000FF]/10"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Export
+                    </Button>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-[300px]">
+                      <CapacityChart 
+                        startDate={startDate} 
+                        endDate={endDate} 
+                        weeks={weeks}
+                        showSeries={["totalCapacity", "plannedCapacity", "netAvailable"]}
+                        plannedRolesData={plannedRolesData}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card className="shadow-md border-[#222222] bg-[#121212] overflow-hidden">
                   <CardHeader className="bg-gradient-to-r from-[#0000FF]/10 to-transparent">
                     <CardTitle className="text-[#FAFDFF]">Planned Roles</CardTitle>
                     <CardDescription className="text-gray-400">Manage team allocation to projects</CardDescription>
@@ -320,6 +358,7 @@ const Index = () => {
                     <PlannedRolesTable 
                       startDate={startDate}
                       endDate={endDate}
+                      onRolesChange={handlePlannedRolesChange}
                     />
                   </CardContent>
                 </Card>
