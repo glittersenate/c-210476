@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useRef } from "react";
 import { format, addDays } from "date-fns";
 import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -9,6 +10,7 @@ interface CapacityChartProps {
   showSeries?: string[]; // Control which data series to show: "totalCapacity", "plannedCapacity", "netAvailable"
   plannedRolesData?: any[]; // Optional data from planned roles table
   id?: string; // Optional ID for export functionality
+  onDataChange?: (data: any[]) => void; // Add this prop for data export functionality
 }
 
 // Mock data generator
@@ -89,15 +91,22 @@ const CapacityChart = ({
   weeks, 
   showSeries = ["totalCapacity", "plannedCapacity", "netAvailable"], 
   plannedRolesData,
-  id = "capacity-chart" 
+  id = "capacity-chart",
+  onDataChange
 }: CapacityChartProps) => {
   const [data, setData] = useState<any[]>([]);
   const chartRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     // Generate mock data based on start date and number of weeks
-    setData(generateCapacityData(startDate, weeks, plannedRolesData));
-  }, [startDate, endDate, weeks, plannedRolesData]);
+    const chartData = generateCapacityData(startDate, weeks, plannedRolesData);
+    setData(chartData);
+    
+    // Call onDataChange if provided
+    if (onDataChange) {
+      onDataChange(chartData);
+    }
+  }, [startDate, endDate, weeks, plannedRolesData, onDataChange]);
   
   return (
     <div id={id} ref={chartRef} className="w-full h-full">
