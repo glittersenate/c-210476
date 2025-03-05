@@ -1,5 +1,5 @@
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState } from "react";
 import { format, addDays, addWeeks, differenceInWeeks, startOfWeek } from "date-fns";
 import {
   Table,
@@ -25,7 +25,6 @@ interface AvailabilityTableProps {
   searchText: string;
   minFte: number;
   maxFte: number;
-  onDataChange?: (data: any[]) => void;
 }
 
 // Mock team members data
@@ -132,102 +131,69 @@ const generateAllocationData = (startDate: Date, endDate: Date) => {
   return allocations;
 };
 
-const AvailabilityTable = ({ 
-  startDate, 
-  endDate, 
-  searchText, 
-  minFte, 
-  maxFte,
-  onDataChange 
-}: AvailabilityTableProps) => {
+const AvailabilityTable = ({ startDate, endDate, searchText, minFte, maxFte }: AvailabilityTableProps) => {
   const [data, setData] = useState<any[]>([]);
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'ascending' | 'descending' } | null>(null);
   const [weekHeaders, setWeekHeaders] = useState<any[]>([]);
-  const previousInputsRef = useRef<string>("");
-  
-  // Use memoized callback to prevent unnecessary re-renders
-  const updateData = useCallback(() => {
-    // Create a string representation of all inputs to check if they've changed
-    const currentInputs = JSON.stringify({
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString(),
-      searchText,
-      minFte,
-      maxFte,
-      sortConfig
-    });
-    
-    // Only update if inputs have changed
-    if (currentInputs !== previousInputsRef.current) {
-      previousInputsRef.current = currentInputs;
-      
-      // Generate week headers
-      const numWeeks = Math.max(1, differenceInWeeks(endDate, startDate));
-      const headers = [];
-      
-      for (let i = 0; i < numWeeks; i++) {
-        const weekStart = addWeeks(startOfWeek(startDate, { weekStartsOn: 1 }), i);
-        headers.push({
-          week: i,
-          date: weekStart,
-          label: format(weekStart, 'MMM d')
-        });
-      }
-      
-      setWeekHeaders(headers);
-      
-      // Generate mock allocation data
-      let allocations = generateAllocationData(startDate, endDate);
-      
-      // Apply filters
-      allocations = allocations.filter(item => {
-        // Filter by FTE range
-        if (item.availableFte < minFte || item.availableFte > maxFte) {
-          return false;
-        }
-        
-        // Filter by search text
-        if (searchText) {
-          const searchLower = searchText.toLowerCase();
-          const nameMatch = item.name.toLowerCase().includes(searchLower);
-          const roleMatch = item.role.toLowerCase().includes(searchLower);
-          const projectMatch = item.allocations.some((a: any) => 
-            a.projectName.toLowerCase().includes(searchLower)
-          );
-          
-          if (!nameMatch && !roleMatch && !projectMatch) {
-            return false;
-          }
-        }
-        
-        return true;
-      });
-      
-      // Apply sorting if configured
-      if (sortConfig) {
-        allocations.sort((a, b) => {
-          if (a[sortConfig.key] < b[sortConfig.key]) {
-            return sortConfig.direction === 'ascending' ? -1 : 1;
-          }
-          if (a[sortConfig.key] > b[sortConfig.key]) {
-            return sortConfig.direction === 'ascending' ? 1 : -1;
-          }
-          return 0;
-        });
-      }
-      
-      setData(allocations);
-      
-      // Pass data back to parent component if onDataChange is provided
-      if (onDataChange) {
-        onDataChange(allocations);
-      }
-    }
-  }, [startDate, endDate, searchText, minFte, maxFte, sortConfig, onDataChange]);
   
   useEffect(() => {
-    updateData();
-  }, [updateData]);
+    // Generate week headers
+    const numWeeks = Math.max(1, differenceInWeeks(endDate, startDate));
+    const headers = [];
+    
+    for (let i = 0; i < numWeeks; i++) {
+      const weekStart = addWeeks(startOfWeek(startDate, { weekStartsOn: 1 }), i);
+      headers.push({
+        week: i,
+        date: weekStart,
+        label: format(weekStart, 'MMM d')
+      });
+    }
+    
+    setWeekHeaders(headers);
+    
+    // Generate mock allocation data
+    let allocations = generateAllocationData(startDate, endDate);
+    
+    // Apply filters
+    allocations = allocations.filter(item => {
+      // Filter by FTE range
+      if (item.availableFte < minFte || item.availableFte > maxFte) {
+        return false;
+      }
+      
+      // Filter by search text
+      if (searchText) {
+        const searchLower = searchText.toLowerCase();
+        const nameMatch = item.name.toLowerCase().includes(searchLower);
+        const roleMatch = item.role.toLowerCase().includes(searchLower);
+        const projectMatch = item.allocations.some((a: any) => 
+          a.projectName.toLowerCase().includes(searchLower)
+        );
+        
+        if (!nameMatch && !roleMatch && !projectMatch) {
+          return false;
+        }
+      }
+      
+      return true;
+    });
+    
+    // Apply sorting if configured
+    if (sortConfig) {
+      allocations.sort((a, b) => {
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? -1 : 1;
+        }
+        if (a[sortConfig.key] > b[sortConfig.key]) {
+          return sortConfig.direction === 'ascending' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    
+    setData(allocations);
+  }, [startDate, endDate, searchText, minFte, maxFte, sortConfig]);
   
   const handleSort = (key: string) => {
     let direction: 'ascending' | 'descending' = 'ascending';

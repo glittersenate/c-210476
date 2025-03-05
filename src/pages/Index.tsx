@@ -15,7 +15,6 @@ import RoleCapacityChart from "@/components/RoleCapacityChart";
 import AvailabilityTable from "@/components/AvailabilityTable";
 import PlannedRolesTable from "@/components/PlannedRolesTable";
 import { useToast } from "@/components/ui/use-toast";
-import { exportChartAsPNG, exportToExcel, prepareChartDataForExcel, prepareTableDataForExcel } from "@/utils/exportUtils";
 
 const Index = () => {
   const { toast } = useToast();
@@ -29,8 +28,6 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
   const [plannedRolesData, setPlannedRolesData] = useState<any[]>([]);
-  const [availabilityData, setAvailabilityData] = useState<any[]>([]);
-  const [capacityChartData, setCapacityChartData] = useState<any[]>([]);
   
   const metrics = {
     totalFteDays: 248,
@@ -47,81 +44,21 @@ const Index = () => {
     setWeeks(value[0]);
   };
 
-  const handleExportData = async (type: string) => {
+  const handleExportData = (type: string) => {
     setIsLoading(true);
-    let success = false;
     
-    try {
-      switch (type) {
-        case 'capacity':
-          success = await exportChartAsPNG('capacity-chart', 'capacity-data');
-          break;
-        case 'planned-capacity':
-          success = await exportChartAsPNG('planned-capacity-chart', 'planned-capacity-data');
-          break;
-        case 'roles':
-          success = await exportChartAsPNG('role-capacity-chart', 'role-capacity-data');
-          break;
-        case 'availability':
-          // Get data from the AvailabilityTable component
-          if (availabilityData && availabilityData.length > 0) {
-            const exportableData = prepareTableDataForExcel(availabilityData);
-            success = exportToExcel(exportableData, 'availability-data');
-          } else {
-            toast({
-              title: "Export Failed",
-              description: "No data available to export.",
-              variant: "destructive",
-              duration: 3000,
-            });
-          }
-          break;
-        default:
-          toast({
-            title: "Export Failed",
-            description: "Unknown export type.",
-            variant: "destructive",
-            duration: 3000,
-          });
-      }
-      
-      if (success) {
-        toast({
-          title: "Export Successful",
-          description: `Your ${type} data has been exported.`,
-          duration: 3000,
-        });
-      } else {
-        toast({
-          title: "Export Failed",
-          description: "There was an error exporting your data.",
-          variant: "destructive",
-          duration: 3000,
-        });
-      }
-    } catch (error) {
-      console.error("Export error:", error);
+    setTimeout(() => {
+      setIsLoading(false);
       toast({
-        title: "Export Failed",
-        description: "There was an error exporting your data.",
-        variant: "destructive",
+        title: "Export Successful",
+        description: `Your ${type} data has been exported.`,
         duration: 3000,
       });
-    } finally {
-      setIsLoading(false);
-    }
+    }, 1000);
   };
 
   const handlePlannedRolesChange = (roles: any[]) => {
     setPlannedRolesData(roles);
-  };
-  
-  const handleAvailabilityDataChange = (data: any[]) => {
-    setAvailabilityData(data);
-  };
-  
-  const handleCapacityDataChange = (data: any[]) => {
-    setCapacityChartData(data);
   };
 
   return (
@@ -309,8 +246,6 @@ const Index = () => {
                         endDate={endDate} 
                         weeks={weeks}
                         showSeries={["totalCapacity"]}
-                        id="capacity-chart"
-                        onDataChange={handleCapacityDataChange}
                       />
                     </div>
                   </CardContent>
@@ -342,7 +277,6 @@ const Index = () => {
                       searchText={searchText}
                       minFte={minFte}
                       maxFte={maxFte}
-                      onDataChange={handleAvailabilityDataChange}
                     />
                   </CardContent>
                 </Card>
@@ -376,7 +310,6 @@ const Index = () => {
                         weeks={weeks}
                         showSeries={["totalCapacity", "plannedCapacity", "netAvailable"]}
                         plannedRolesData={plannedRolesData}
-                        id="planned-capacity-chart"
                       />
                     </div>
                   </CardContent>
@@ -405,7 +338,6 @@ const Index = () => {
                         startDate={startDate} 
                         endDate={endDate} 
                         weeks={weeks}
-                        id="role-capacity-chart"
                       />
                     </div>
                   </CardContent>

@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
+
+import React, { useEffect, useState } from "react";
 import { addDays, format } from "date-fns";
 import { Line, LineChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
@@ -6,7 +7,6 @@ interface RoleCapacityChartProps {
   startDate: Date;
   endDate: Date;
   weeks: number;
-  id?: string; // Optional ID for export functionality
 }
 
 // Mock data for roles with Statworx colors
@@ -104,10 +104,9 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-const RoleCapacityChart = ({ startDate, endDate, weeks, id = "role-capacity-chart" }: RoleCapacityChartProps) => {
+const RoleCapacityChart = ({ startDate, endDate, weeks }: RoleCapacityChartProps) => {
   const [data, setData] = useState<any[]>([]);
   const [activeRoles, setActiveRoles] = useState<string[]>([roles[0].name, roles[1].name]);
-  const chartRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     // Generate mock data based on start date and number of weeks
@@ -140,7 +139,7 @@ const RoleCapacityChart = ({ startDate, endDate, weeks, id = "role-capacity-char
         ))}
       </div>
       
-      <div id={id} ref={chartRef} className="flex-1">
+      <div className="flex-1">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data}
