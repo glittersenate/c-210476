@@ -1,5 +1,5 @@
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { format, addDays } from "date-fns";
 import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
@@ -96,17 +96,31 @@ const CapacityChart = ({
 }: CapacityChartProps) => {
   const [data, setData] = useState<any[]>([]);
   const chartRef = useRef<HTMLDivElement>(null);
+  const previousDataRef = useRef<string>("");
   
-  useEffect(() => {
+  // Use memoized callback to prevent unnecessary re-renders
+  const updateData = useCallback(() => {
     // Generate mock data based on start date and number of weeks
     const chartData = generateCapacityData(startDate, weeks, plannedRolesData);
-    setData(chartData);
     
-    // Call onDataChange if provided
-    if (onDataChange) {
-      onDataChange(chartData);
+    // Convert to string for comparison
+    const dataString = JSON.stringify(chartData);
+    
+    // Only update if data has changed
+    if (dataString !== previousDataRef.current) {
+      setData(chartData);
+      previousDataRef.current = dataString;
+      
+      // Call onDataChange if provided
+      if (onDataChange) {
+        onDataChange(chartData);
+      }
     }
   }, [startDate, endDate, weeks, plannedRolesData, onDataChange]);
+  
+  useEffect(() => {
+    updateData();
+  }, [updateData]);
   
   return (
     <div id={id} ref={chartRef} className="w-full h-full">
