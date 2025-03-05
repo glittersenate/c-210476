@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "@/components/ui/calendar";
@@ -26,10 +25,9 @@ const Index = () => {
   const [maxFte, setMaxFte] = useState<number>(1);
   const [searchText, setSearchText] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true); // Simulating authentication
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
   const [plannedRolesData, setPlannedRolesData] = useState<any[]>([]);
   
-  // Simulated metrics data
   const metrics = {
     totalFteDays: 248,
     activeTeamMembers: 12,
@@ -38,7 +36,6 @@ const Index = () => {
   };
 
   useEffect(() => {
-    // Update end date when weeks or start date changes
     setEndDate(addWeeks(startDate, weeks));
   }, [weeks, startDate]);
 
@@ -49,7 +46,6 @@ const Index = () => {
   const handleExportData = (type: string) => {
     setIsLoading(true);
     
-    // Simulate export operation
     setTimeout(() => {
       setIsLoading(false);
       toast({
@@ -81,7 +77,6 @@ const Index = () => {
       
       <main className="container mx-auto py-8 px-4">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Sidebar / Configuration Panel */}
           <div className="lg:col-span-1">
             <Card className="shadow-md border-[#222222] bg-[#121212]">
               <CardHeader className="bg-gradient-to-r from-[#0000FF]/10 to-transparent">
@@ -168,7 +163,6 @@ const Index = () => {
               </CardFooter>
             </Card>
             
-            {/* Metrics Display */}
             <div className="grid grid-cols-2 gap-4 mt-8">
               <Card className="bg-[#121212] border-[#222222] shadow-md transition-all duration-300 hover:shadow-lg">
                 <CardContent className="pt-6">
@@ -207,7 +201,6 @@ const Index = () => {
             </div>
           </div>
           
-          {/* Main Content */}
           <div className="lg:col-span-3">
             <Tabs defaultValue="availability" onValueChange={setActiveTab} className="space-y-8">
               <TabsList className="grid w-full grid-cols-2 bg-[#121212] border border-gray-800">

@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { addDays, format } from "date-fns";
 import { Line, LineChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
@@ -76,7 +76,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
         <p className="text-[#FAFDFF] font-medium mb-2">{`Week: ${label}`}</p>
         
         {Object.entries(roleGroups).map(([roleName, entries], roleIndex) => (
-          <div key={`role-${roleIndex}`} className="mb-2">
+          <React.Fragment key={`role-${roleIndex}`}>
             <p className="text-[#FAFDFF] font-medium">{roleName}</p>
             
             {entries.map((entry, entryIndex) => {
@@ -95,7 +95,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
                 </div>
               );
             })}
-          </div>
+          </React.Fragment>
         ))}
       </div>
     );
