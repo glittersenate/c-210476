@@ -1,5 +1,4 @@
-
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { format, addDays } from "date-fns";
 import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
@@ -9,6 +8,7 @@ interface CapacityChartProps {
   weeks: number;
   showSeries?: string[]; // Control which data series to show: "totalCapacity", "plannedCapacity", "netAvailable"
   plannedRolesData?: any[]; // Optional data from planned roles table
+  id?: string; // Optional ID for export functionality
 }
 
 // Mock data generator
@@ -83,8 +83,16 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-const CapacityChart = ({ startDate, endDate, weeks, showSeries = ["totalCapacity", "plannedCapacity", "netAvailable"], plannedRolesData }: CapacityChartProps) => {
+const CapacityChart = ({ 
+  startDate, 
+  endDate, 
+  weeks, 
+  showSeries = ["totalCapacity", "plannedCapacity", "netAvailable"], 
+  plannedRolesData,
+  id = "capacity-chart" 
+}: CapacityChartProps) => {
   const [data, setData] = useState<any[]>([]);
+  const chartRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     // Generate mock data based on start date and number of weeks
@@ -92,65 +100,67 @@ const CapacityChart = ({ startDate, endDate, weeks, showSeries = ["totalCapacity
   }, [startDate, endDate, weeks, plannedRolesData]);
   
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <AreaChart
-        data={data}
-        margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-      >
-        <CartesianGrid strokeDasharray="3 3" stroke="#222222" />
-        <XAxis 
-          dataKey="name" 
-          tick={{ fontSize: 12, fill: "#FAFDFF" }}
-          tickLine={false}
-          stroke="#333333"
-        />
-        <YAxis 
-          tickLine={false}
-          tick={{ fontSize: 12, fill: "#FAFDFF" }}
-          stroke="#333333"
-          label={{ value: 'FTE', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fontSize: 12, fill: "#FAFDFF" } }}
-        />
-        <Tooltip content={<CustomTooltip />} />
-        <Legend 
-          verticalAlign="top" 
-          height={36}
-          wrapperStyle={{ fontSize: '12px', color: "#FAFDFF" }}
-        />
-        {showSeries.includes("totalCapacity") && (
-          <Area 
-            type="monotone" 
-            dataKey="totalCapacity" 
-            stackId="1" 
-            stroke="#0000FF" 
-            fill="#0000FF"
-            fillOpacity={0.3}
-            name="Total Capacity"
+    <div id={id} ref={chartRef} className="w-full h-full">
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart
+          data={data}
+          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" stroke="#222222" />
+          <XAxis 
+            dataKey="name" 
+            tick={{ fontSize: 12, fill: "#FAFDFF" }}
+            tickLine={false}
+            stroke="#333333"
           />
-        )}
-        {showSeries.includes("plannedCapacity") && (
-          <Area 
-            type="monotone" 
-            dataKey="plannedCapacity" 
-            stackId="2" 
-            stroke="#6682FF" 
-            fill="#6682FF" 
-            fillOpacity={0.3}
-            name="Planned Capacity"
+          <YAxis 
+            tickLine={false}
+            tick={{ fontSize: 12, fill: "#FAFDFF" }}
+            stroke="#333333"
+            label={{ value: 'FTE', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fontSize: 12, fill: "#FAFDFF" } }}
           />
-        )}
-        {showSeries.includes("netAvailable") && (
-          <Area 
-            type="monotone" 
-            dataKey="netAvailable" 
-            stackId="3" 
-            stroke="#3D5BFF" 
-            fill="#3D5BFF" 
-            fillOpacity={0.3}
-            name="Net Available"
+          <Tooltip content={<CustomTooltip />} />
+          <Legend 
+            verticalAlign="top" 
+            height={36}
+            wrapperStyle={{ fontSize: '12px', color: "#FAFDFF" }}
           />
-        )}
-      </AreaChart>
-    </ResponsiveContainer>
+          {showSeries.includes("totalCapacity") && (
+            <Area 
+              type="monotone" 
+              dataKey="totalCapacity" 
+              stackId="1" 
+              stroke="#0000FF" 
+              fill="#0000FF"
+              fillOpacity={0.3}
+              name="Total Capacity"
+            />
+          )}
+          {showSeries.includes("plannedCapacity") && (
+            <Area 
+              type="monotone" 
+              dataKey="plannedCapacity" 
+              stackId="2" 
+              stroke="#6682FF" 
+              fill="#6682FF" 
+              fillOpacity={0.3}
+              name="Planned Capacity"
+            />
+          )}
+          {showSeries.includes("netAvailable") && (
+            <Area 
+              type="monotone" 
+              dataKey="netAvailable" 
+              stackId="3" 
+              stroke="#3D5BFF" 
+              fill="#3D5BFF" 
+              fillOpacity={0.3}
+              name="Net Available"
+            />
+          )}
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
   );
 };
 
