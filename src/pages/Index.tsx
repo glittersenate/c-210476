@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "@/components/ui/calendar";
@@ -253,34 +254,6 @@ const Index = () => {
                 <Card className="shadow-md border-[#222222] bg-[#121212] overflow-hidden">
                   <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-[#0000FF]/10 to-transparent">
                     <div>
-                      <CardTitle className="text-[#FAFDFF]">Role-based FTE Availability</CardTitle>
-                      <CardDescription className="text-gray-400">Breakdown by role</CardDescription>
-                    </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => handleExportData('roles')}
-                      disabled={isLoading}
-                      className="border-[#0000FF] text-[#0000FF] hover:bg-[#0000FF]/10"
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      Export
-                    </Button>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-[400px]">
-                      <RoleCapacityChart 
-                        startDate={startDate} 
-                        endDate={endDate} 
-                        weeks={weeks}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-                
-                <Card className="shadow-md border-[#222222] bg-[#121212] overflow-hidden">
-                  <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-[#0000FF]/10 to-transparent">
-                    <div>
                       <CardTitle className="text-[#FAFDFF]">Filtered Availability Data</CardTitle>
                       <CardDescription className="text-gray-400">
                         {searchText ? `Search: "${searchText}"` : 'All team members'}
@@ -337,6 +310,34 @@ const Index = () => {
                         weeks={weeks}
                         showSeries={["totalCapacity", "plannedCapacity", "netAvailable"]}
                         plannedRolesData={plannedRolesData}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card className="shadow-md border-[#222222] bg-[#121212] overflow-hidden">
+                  <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-[#0000FF]/10 to-transparent">
+                    <div>
+                      <CardTitle className="text-[#FAFDFF]">Role-based FTE Availability</CardTitle>
+                      <CardDescription className="text-gray-400">Breakdown by role</CardDescription>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleExportData('roles')}
+                      disabled={isLoading}
+                      className="border-[#0000FF] text-[#0000FF] hover:bg-[#0000FF]/10"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Export
+                    </Button>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-[400px]">
+                      <RoleCapacityChart 
+                        startDate={startDate} 
+                        endDate={endDate} 
+                        weeks={weeks}
                       />
                     </div>
                   </CardContent>
