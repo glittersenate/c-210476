@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { addDays, format } from "date-fns";
 import { Line, LineChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
@@ -108,109 +108,119 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 const RoleCapacityChart = ({ startDate, endDate, weeks, onDataChange }: RoleCapacityChartProps) => {
   const [data, setData] = useState<any[]>([]);
   const [activeRoles, setActiveRoles] = useState<string[]>([roles[0].name, roles[1].name]);
-  const prevDataRef = useRef<any[]>([]);
+  const prevInputsRef = useRef<string>('');
   
-  // Generate data with memoization to prevent unnecessary re-renders
-  const generateRoleCapacityDataMemo = useCallback(() => {
-    const newData = generateRoleCapacityData(startDate, weeks);
-    
-    // Check if the data has changed
-    const dataChanged = JSON.stringify(newData) !== JSON.stringify(prevDataRef.current);
-    
-    if (dataChanged) {
+  // Use useMemo to compute a stable key for checking if inputs have changed
+  const inputsKey = useMemo(() => {
+    return JSON.stringify({
+      startDate: startDate.toISOString(),
+      weeks
+    });
+  }, [startDate, weeks]);
+  
+  // Generate data only when inputs change
+  useEffect(() => {
+    // Only regenerate data if something important changed
+    if (prevInputsRef.current !== inputsKey) {
+      const newData = generateRoleCapacityData(startDate, weeks);
       setData(newData);
-      prevDataRef.current = newData;
+      prevInputsRef.current = inputsKey;
       
       // Call the onDataChange callback if provided
       if (onDataChange) {
         onDataChange(newData);
       }
     }
-  }, [startDate, weeks, onDataChange]);
+  }, [inputsKey, startDate, weeks, onDataChange]);
   
-  useEffect(() => {
-    generateRoleCapacityDataMemo();
-  }, [generateRoleCapacityDataMemo]);
+  const toggleRole = useCallback((roleName: string) => {
+    setActiveRoles(prev => 
+      prev.includes(roleName) 
+        ? prev.filter(r => r !== roleName) 
+        : [...prev, roleName]
+    );
+  }, []);
   
-  const toggleRole = (roleName: string) => {
-    if (activeRoles.includes(roleName)) {
-      setActiveRoles(activeRoles.filter(r => r !== roleName));
-    } else {
-      setActiveRoles([...activeRoles, roleName]);
-    }
-  };
+  // Memoize the role buttons to prevent re-renders
+  const roleButtons = useMemo(() => (
+    <div className="flex flex-wrap gap-2 mb-4">
+      {roles.map(role => (
+        <button
+          key={role.id}
+          className={`px-3 py-1 text-xs rounded-full transition-colors ${
+            activeRoles.includes(role.name)
+              ? 'bg-[#0000FF] text-[#FAFDFF]'
+              : 'bg-[#222222] text-gray-400 hover:bg-[#333333]'
+          }`}
+          onClick={() => toggleRole(role.name)}
+        >
+          {role.name}
+        </button>
+      ))}
+    </div>
+  ), [activeRoles, toggleRole]);
+  
+  // Memoize the chart content to prevent re-renders
+  const chartContent = useMemo(() => (
+    <ResponsiveContainer width="100%" height="100%">
+      <LineChart
+        data={data}
+        margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+      >
+        <CartesianGrid strokeDasharray="3 3" stroke="#222222" />
+        <XAxis 
+          dataKey="name" 
+          tick={{ fontSize: 12, fill: "#FAFDFF" }}
+          tickLine={false}
+          stroke="#333333"
+        />
+        <YAxis 
+          tickLine={false}
+          tick={{ fontSize: 12, fill: "#FAFDFF" }}
+          stroke="#333333"
+          label={{ value: 'FTE', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fontSize: 12, fill: "#FAFDFF" } }}
+        />
+        <Tooltip content={<CustomTooltip />} />
+        <Legend 
+          verticalAlign="top" 
+          height={36}
+          wrapperStyle={{ fontSize: '12px', color: "#FAFDFF" }}
+        />
+        
+        {roles.filter(role => activeRoles.includes(role.name)).map((role) => (
+          <Line
+            key={`${role.name}_capacity`}
+            type="monotone"
+            dataKey={`${role.name}_capacity`}
+            name={`${role.name} Capacity`}
+            stroke={role.color}
+            strokeWidth={2}
+            dot={{ r: 3 }}
+            activeDot={{ r: 5 }}
+          />
+        ))}
+        
+        {roles.filter(role => activeRoles.includes(role.name)).map((role) => (
+          <Line
+            key={`${role.name}_planned`}
+            type="monotone"
+            dataKey={`${role.name}_planned`}
+            name={`${role.name} Planned`}
+            stroke={role.color}
+            strokeDasharray="5 5"
+            strokeWidth={2}
+            dot={{ r: 3 }}
+          />
+        ))}
+      </LineChart>
+    </ResponsiveContainer>
+  ), [data, activeRoles]);
   
   return (
     <div className="h-full flex flex-col">
-      <div className="flex flex-wrap gap-2 mb-4">
-        {roles.map(role => (
-          <button
-            key={role.id}
-            className={`px-3 py-1 text-xs rounded-full transition-colors ${
-              activeRoles.includes(role.name)
-                ? 'bg-[#0000FF] text-[#FAFDFF]'
-                : 'bg-[#222222] text-gray-400 hover:bg-[#333333]'
-            }`}
-            onClick={() => toggleRole(role.name)}
-          >
-            {role.name}
-          </button>
-        ))}
-      </div>
-      
+      {roleButtons}
       <div className="flex-1">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={data}
-            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#222222" />
-            <XAxis 
-              dataKey="name" 
-              tick={{ fontSize: 12, fill: "#FAFDFF" }}
-              tickLine={false}
-              stroke="#333333"
-            />
-            <YAxis 
-              tickLine={false}
-              tick={{ fontSize: 12, fill: "#FAFDFF" }}
-              stroke="#333333"
-              label={{ value: 'FTE', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fontSize: 12, fill: "#FAFDFF" } }}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend 
-              verticalAlign="top" 
-              height={36}
-              wrapperStyle={{ fontSize: '12px', color: "#FAFDFF" }}
-            />
-            
-            {roles.filter(role => activeRoles.includes(role.name)).map((role) => (
-              <Line
-                key={`${role.name}_capacity`}
-                type="monotone"
-                dataKey={`${role.name}_capacity`}
-                name={`${role.name} Capacity`}
-                stroke={role.color}
-                strokeWidth={2}
-                dot={{ r: 3 }}
-                activeDot={{ r: 5 }}
-              />
-            ))}
-            
-            {roles.filter(role => activeRoles.includes(role.name)).map((role) => (
-              <Line
-                key={`${role.name}_planned`}
-                type="monotone"
-                dataKey={`${role.name}_planned`}
-                name={`${role.name} Planned`}
-                stroke={role.color}
-                strokeDasharray="5 5"
-                strokeWidth={2}
-                dot={{ r: 3 }}
-              />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
+        {chartContent}
       </div>
     </div>
   );

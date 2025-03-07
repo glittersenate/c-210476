@@ -1,5 +1,5 @@
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { format, addDays } from "date-fns";
 import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
@@ -95,30 +95,34 @@ const CapacityChart = ({
   onDataChange
 }: CapacityChartProps) => {
   const [data, setData] = useState<any[]>([]);
-  const prevDataRef = useRef<any[]>([]);
+  const prevInputsRef = useRef<string>('');
   
-  // Generate capacity data with memoization to prevent unnecessary re-renders
-  const generateCapacityDataMemo = useCallback(() => {
-    const newData = generateCapacityData(startDate, weeks, plannedRolesData);
-    
-    // Check if the data has changed
-    const dataChanged = JSON.stringify(newData) !== JSON.stringify(prevDataRef.current);
-    
-    if (dataChanged) {
+  // Use useMemo to compute a stable key for checking if inputs have changed
+  const inputsKey = useMemo(() => {
+    return JSON.stringify({
+      startDate: startDate.toISOString(),
+      weeks,
+      plannedRolesData: plannedRolesData ? JSON.stringify(plannedRolesData) : null
+    });
+  }, [startDate, weeks, plannedRolesData]);
+  
+  // Generate capacity data only when inputs change
+  useEffect(() => {
+    // Only regenerate data if something important changed
+    if (prevInputsRef.current !== inputsKey) {
+      const newData = generateCapacityData(startDate, weeks, plannedRolesData);
       setData(newData);
-      prevDataRef.current = newData;
+      prevInputsRef.current = inputsKey;
+      
       // Call the onDataChange callback if provided
       if (onDataChange) {
         onDataChange(newData);
       }
     }
-  }, [startDate, weeks, plannedRolesData, onDataChange]);
+  }, [inputsKey, startDate, weeks, plannedRolesData, onDataChange]);
   
-  useEffect(() => {
-    generateCapacityDataMemo();
-  }, [generateCapacityDataMemo]);
-  
-  return (
+  // Memoize the chart content to prevent re-renders
+  const chartContent = useMemo(() => (
     <ResponsiveContainer width="100%" height="100%" id={id}>
       <AreaChart
         data={data}
@@ -178,7 +182,9 @@ const CapacityChart = ({
         )}
       </AreaChart>
     </ResponsiveContainer>
-  );
+  ), [data, id, showSeries]);
+  
+  return chartContent;
 };
 
 export default CapacityChart;
