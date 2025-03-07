@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { addDays, format } from "date-fns";
 import { Line, LineChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -10,13 +9,13 @@ interface RoleCapacityChartProps {
   onDataChange?: (data: any[]) => void; // Callback for exporting data
 }
 
-// Mock data for roles with Statworx colors
+// Mock data for roles with more distinguishable colors
 const roles = [
-  { id: 1, name: "Frontend Developer", color: "#0000FF" },
-  { id: 2, name: "Backend Developer", color: "#4D4DFF" },
-  { id: 3, name: "Designer", color: "#8080FF" },
-  { id: 4, name: "Product Manager", color: "#B3B3FF" },
-  { id: 5, name: "QA Engineer", color: "#FAFDFF" }
+  { id: 1, name: "Frontend Developer", color: "#8B5CF6" }, // Vivid Purple
+  { id: 2, name: "Backend Developer", color: "#0EA5E9" },  // Ocean Blue
+  { id: 3, name: "Designer", color: "#F97316" },           // Bright Orange
+  { id: 4, name: "Product Manager", color: "#D946EF" },    // Magenta Pink
+  { id: 5, name: "QA Engineer", color: "#10B981" }         // Emerald Green
 ];
 
 // Mock data generator for role-based capacity
@@ -149,7 +148,7 @@ const RoleCapacityChart = ({ startDate, endDate, weeks, onDataChange }: RoleCapa
           key={role.id}
           className={`px-3 py-1 text-xs rounded-full transition-colors ${
             activeRoles.includes(role.name)
-              ? 'bg-[#0000FF] text-[#FAFDFF]'
+              ? `bg-[${role.color}] text-[#FAFDFF]`
               : 'bg-[#222222] text-gray-400 hover:bg-[#333333]'
           }`}
           onClick={() => toggleRole(role.name)}
