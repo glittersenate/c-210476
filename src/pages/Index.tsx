@@ -15,6 +15,7 @@ import RoleCapacityChart from "@/components/RoleCapacityChart";
 import AvailabilityTable from "@/components/AvailabilityTable";
 import PlannedRolesTable from "@/components/PlannedRolesTable";
 import { useToast } from "@/components/ui/use-toast";
+import { exportToExcel, formatCapacityDataForExport, formatAvailabilityDataForExport, formatPlannedRolesDataForExport } from "@/utils/exportUtils";
 
 const Index = () => {
   const { toast } = useToast();
@@ -29,6 +30,12 @@ const Index = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
   const [plannedRolesData, setPlannedRolesData] = useState<any[]>([]);
   
+  // Data states for exports
+  const [capacityChartData, setCapacityChartData] = useState<any[]>([]);
+  const [availabilityTableData, setAvailabilityTableData] = useState<any[]>([]);
+  const [plannedCapacityChartData, setPlannedCapacityChartData] = useState<any[]>([]);
+  const [roleCapacityChartData, setRoleCapacityChartData] = useState<any[]>([]);
+
   const metrics = {
     totalFteDays: 248,
     activeTeamMembers: 12,
@@ -47,18 +54,68 @@ const Index = () => {
   const handleExportData = (type: string) => {
     setIsLoading(true);
     
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      switch (type) {
+        case 'capacity':
+          exportToExcel(
+            formatCapacityDataForExport(capacityChartData),
+            'Total_FTE_Availability',
+            'Capacity'
+          );
+          break;
+        case 'availability':
+          exportToExcel(
+            formatAvailabilityDataForExport(availabilityTableData),
+            'Filtered_Availability_Data',
+            'Availability'
+          );
+          break;
+        case 'planned-capacity':
+          exportToExcel(
+            formatCapacityDataForExport(plannedCapacityChartData),
+            'Total_FTE_Capacity_Planned_Usage',
+            'PlannedCapacity'
+          );
+          break;
+        case 'roles':
+          exportToExcel(
+            formatPlannedRolesDataForExport(plannedRolesData),
+            'Role_Based_FTE_Availability',
+            'Roles'
+          );
+          break;
+        default:
+          throw new Error('Unknown export type');
+      }
+      
       toast({
         title: "Export Successful",
         description: `Your ${type} data has been exported.`,
         duration: 3000,
       });
-    }, 1000);
+    } catch (error) {
+      console.error('Export error:', error);
+      toast({
+        title: "Export Failed",
+        description: "An error occurred while exporting data.",
+        variant: "destructive",
+        duration: 3000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handlePlannedRolesChange = (roles: any[]) => {
     setPlannedRolesData(roles);
+  };
+
+  const handleAvailabilityTableDataChange = (data: any[]) => {
+    setAvailabilityTableData(data);
+  };
+
+  const handleRoleCapacityDataChange = (data: any[]) => {
+    setRoleCapacityChartData(data);
   };
 
   return (
@@ -246,6 +303,8 @@ const Index = () => {
                         endDate={endDate} 
                         weeks={weeks}
                         showSeries={["totalCapacity"]}
+                        id="total-fte-availability-chart"
+                        onDataChange={setCapacityChartData}
                       />
                     </div>
                   </CardContent>
@@ -277,6 +336,7 @@ const Index = () => {
                       searchText={searchText}
                       minFte={minFte}
                       maxFte={maxFte}
+                      onDataChange={handleAvailabilityTableDataChange}
                     />
                   </CardContent>
                 </Card>
@@ -310,6 +370,8 @@ const Index = () => {
                         weeks={weeks}
                         showSeries={["totalCapacity", "plannedCapacity", "netAvailable"]}
                         plannedRolesData={plannedRolesData}
+                        id="planned-capacity-chart"
+                        onDataChange={setPlannedCapacityChartData}
                       />
                     </div>
                   </CardContent>
@@ -338,6 +400,7 @@ const Index = () => {
                         startDate={startDate} 
                         endDate={endDate} 
                         weeks={weeks}
+                        onDataChange={handleRoleCapacityDataChange}
                       />
                     </div>
                   </CardContent>

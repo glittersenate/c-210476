@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { format, addDays } from "date-fns";
 import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
@@ -9,6 +9,8 @@ interface CapacityChartProps {
   weeks: number;
   showSeries?: string[]; // Control which data series to show: "totalCapacity", "plannedCapacity", "netAvailable"
   plannedRolesData?: any[]; // Optional data from planned roles table
+  id?: string; // Optional id for the chart container
+  onDataChange?: (data: any[]) => void; // Callback to get data for export
 }
 
 // Mock data generator
@@ -83,16 +85,41 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-const CapacityChart = ({ startDate, endDate, weeks, showSeries = ["totalCapacity", "plannedCapacity", "netAvailable"], plannedRolesData }: CapacityChartProps) => {
+const CapacityChart = ({ 
+  startDate, 
+  endDate, 
+  weeks, 
+  showSeries = ["totalCapacity", "plannedCapacity", "netAvailable"], 
+  plannedRolesData,
+  id,
+  onDataChange
+}: CapacityChartProps) => {
   const [data, setData] = useState<any[]>([]);
+  const prevDataRef = useRef<any[]>([]);
+  
+  // Generate capacity data with memoization to prevent unnecessary re-renders
+  const generateCapacityDataMemo = useCallback(() => {
+    const newData = generateCapacityData(startDate, weeks, plannedRolesData);
+    
+    // Check if the data has changed
+    const dataChanged = JSON.stringify(newData) !== JSON.stringify(prevDataRef.current);
+    
+    if (dataChanged) {
+      setData(newData);
+      prevDataRef.current = newData;
+      // Call the onDataChange callback if provided
+      if (onDataChange) {
+        onDataChange(newData);
+      }
+    }
+  }, [startDate, weeks, plannedRolesData, onDataChange]);
   
   useEffect(() => {
-    // Generate mock data based on start date and number of weeks
-    setData(generateCapacityData(startDate, weeks, plannedRolesData));
-  }, [startDate, endDate, weeks, plannedRolesData]);
+    generateCapacityDataMemo();
+  }, [generateCapacityDataMemo]);
   
   return (
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width="100%" height="100%" id={id}>
       <AreaChart
         data={data}
         margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
