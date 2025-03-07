@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { format, addDays, addWeeks, differenceInWeeks, startOfWeek } from "date-fns";
 import {
@@ -25,6 +24,7 @@ interface AvailabilityTableProps {
   searchText: string;
   minFte: number;
   maxFte: number;
+  onDataChange?: (data: any[]) => void;
 }
 
 // Mock team members data
@@ -131,7 +131,7 @@ const generateAllocationData = (startDate: Date, endDate: Date) => {
   return allocations;
 };
 
-const AvailabilityTable = ({ startDate, endDate, searchText, minFte, maxFte }: AvailabilityTableProps) => {
+const AvailabilityTable = ({ startDate, endDate, searchText, minFte, maxFte, onDataChange }: AvailabilityTableProps) => {
   const [data, setData] = useState<any[]>([]);
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'ascending' | 'descending' } | null>(null);
   const [weekHeaders, setWeekHeaders] = useState<any[]>([]);
@@ -193,7 +193,12 @@ const AvailabilityTable = ({ startDate, endDate, searchText, minFte, maxFte }: A
     }
     
     setData(allocations);
-  }, [startDate, endDate, searchText, minFte, maxFte, sortConfig]);
+    
+    // Call onDataChange callback if provided
+    if (onDataChange) {
+      onDataChange(allocations);
+    }
+  }, [startDate, endDate, searchText, minFte, maxFte, sortConfig, onDataChange]);
   
   const handleSort = (key: string) => {
     let direction: 'ascending' | 'descending' = 'ascending';
